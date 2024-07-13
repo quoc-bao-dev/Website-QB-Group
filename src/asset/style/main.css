@@ -1,0 +1,132 @@
+.section {
+  padding: 20px 0;
+}
+
+.container {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header-top.close {
+  display: none !important;
+}
+
+.header-bottom {
+  transform: translateY(0);
+  max-height: -moz-fit-content;
+  max-height: fit-content;
+  opacity: 1;
+}
+.header-bottom.close {
+  transform: translateY(-100%);
+  opacity: 0;
+  max-height: 0;
+}
+
+.cart-drawer-wrapper {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+}
+.cart-drawer-wrapper.show {
+  opacity: 1;
+  visibility: visible;
+}
+.cart-drawer-wrapper .cart-drawer {
+  transition: all 0.3s ease-in-out;
+  transform: translateX(100%);
+}
+.cart-drawer-wrapper .cart-drawer.show {
+  transform: translateX(0);
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input:focus {
+  outline: none !important;
+  border: none !important;
+}
+
+/* Custom styles for the modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 50;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.drop-down .drop-down-content {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease-in-out;
+}
+.drop-down .drop-down-content.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wrap-input {
+  width: 350px;
+  transition: all 0.3s ease-in-out;
+}
+.wrap-input.input-focus {
+  width: 600px;
+}
+
+.input-focus {
+  outline: 2px solid rgb(195, 195, 195);
+}
+
+.search-result {
+  max-height: 0px;
+  overflow-y: auto;
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+}
+.search-result::-webkit-scrollbar {
+  width: 5px;
+}
+.search-result::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.search-result::-webkit-scrollbar-thumb {
+  background: #888;
+}
+.search-result::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.search-result.show {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.result::-webkit-scrollbar {
+  width: 2px;
+}
+.result::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.result::-webkit-scrollbar-thumb {
+  background: #888;
+}
+.result::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.result.show {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.hidden-important {
+  display: none !important;
+}/*# sourceMappingURL=main.css.map */

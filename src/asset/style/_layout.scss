@@ -1,0 +1,33 @@
+.section {
+    padding: 20px 0;
+}
+
+.container {
+    width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+// .warp-drop-down {
+//     .hover-drop-down {
+//         & + div {
+//             display: none;
+//         }
+
+//         &:hover + div {
+//             display: block;
+//         }
+//     }
+//     .warp-drop-down:hover & + div {
+//         display: block;
+//     }
+// }
+// .hover-drop-down {
+//     & + div {
+//         display: none;
+//     }
+
+//     &:hover + div {
+//         display: block;
+//     }
+// }
