@@ -27,6 +27,7 @@ export interface Product {
     image: string;
     tags: string[];
     discount: number;
+    slug: string;
     isShow: boolean;
     orderNumber: number;
     isNewItem: boolean;

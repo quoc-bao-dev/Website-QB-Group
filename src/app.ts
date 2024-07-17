@@ -1,7 +1,5 @@
 import FooterComponent from './components/layout/footer';
 import HeaderComponent from './components/layout/header';
-import FormTestComponent from './formCompoent.test';
-import { test } from './function.test';
 import QBRouter from './lib/QBRouter';
 import CartPage from './pages/cart';
 import CheckOutPage from './pages/checkout';
@@ -30,11 +28,7 @@ const appInit = async () => {
     // QBRouter.route('*', NotFoundPage);
 
     // QBRouter.route('/test', TestComponent);
-    // QBRouter.nav('/');
-    QBRouter.route('/test-form', FormTestComponent);
     QBRouter.listen();
-
-    test();
 };
 
 export default appInit;

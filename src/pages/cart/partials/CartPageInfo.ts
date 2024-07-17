@@ -5,6 +5,7 @@ import QBComponent from '../../../lib/QBComponent';
 import QBRouter from '../../../lib/QBRouter';
 
 import cartReducer from '../../../store/cartReducer';
+import checkoutReducer from '../../../store/checkoutReducer';
 import { date } from '../../../util/date';
 import { prd, usd } from '../../../util/productUtils';
 import toast from '../../../util/toast';
@@ -194,6 +195,7 @@ class CartPageInfo extends QBComponent {
         });
 
         this.signEvent('#btn-checkout', 'click', () => {
+            checkoutReducer.clear();
             QBRouter.nav('/checkout');
         });
     };

@@ -1,7 +1,11 @@
 import authenService from '../api/authenService';
+import cartService from '../api/cartService';
 import { IUser } from '../interface/user';
 import Listener from '../lib/listener';
+import QBRouter from '../lib/QBRouter';
 import { decodeTokenPayload } from '../util/token';
+import cartReducer from './cartReducer';
+import checkoutReducer from './checkoutReducer';
 
 class userReducer {
     data: IUser | null = null;
@@ -74,6 +78,8 @@ class userReducer {
                 // add user to store
                 this.setUser(user);
 
+                //load cart form server
+                cartReducer.loadCartOnServerByUser(user.userId);
                 return true;
             }
         }
@@ -83,7 +89,16 @@ class userReducer {
 
     logout() {
         localStorage.removeItem('accessToken');
+        //sync cart on server
+        cartReducer.synCartOnServer();
+        QBRouter.nav('/');
         this.setUser(null);
+
+        //clear checkout
+        checkoutReducer.clear();
+
+        //clear cart
+        cartReducer.clear();
     }
 }
 

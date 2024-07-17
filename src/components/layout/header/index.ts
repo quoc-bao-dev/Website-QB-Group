@@ -5,7 +5,7 @@ import Listener from '../../../lib/listener';
 import cartReducer from '../../../store/cartReducer';
 import HeaderCartSidebar from './partials/HeaderCartSidebar';
 import HeaderSearchResult from './partials/HeaderSearchResult';
-import userReducer from '../../../store/userReducer';
+import HeaderUserBtn from './partials/HeaderUserBtn';
 
 class CounterLabel extends QBComponent {
     protected markup: () => string = () => {
@@ -68,12 +68,15 @@ class HeaderComponent extends QBComponent<null> {
         this.renderComponent('#cart-quantity', new CounterLabel(), 'cart-quantity');
     }
 
-    private renderUser() {
-        this.renderHTML('#user', `<p>${userReducer.data?.username} </p>`);
+    // private renderUser() {
+    //     this.renderHTML('#user', `<p>${userReducer.data?.username} </p>`);
 
-        this.signEvent('#user', 'click', () => {
-            userReducer.logout();
-        });
+    //     this.signEvent('#user', 'click', () => {
+    //         userReducer.logout();
+    //     });
+    // }
+    private renderUser() {
+        this.renderComponent('#user-btn', new HeaderUserBtn(), 'user');
     }
 
     // template UI
@@ -81,14 +84,20 @@ class HeaderComponent extends QBComponent<null> {
     private hiddenHeaderBottom() {
         const path = window.location.pathname;
         switch (path) {
+            case '/signup':
+                this.node('#header-bottom')?.classList.add('hidden-important');
+                this.node('#header-layout')?.classList.add('hidden-important');
+                break;
             case '/checkout':
             case '/login':
-            case '/register':
             case '/cart':
+                this.node('#header-layout')?.classList.remove('hidden-important');
                 this.node('#header-bottom')?.classList.add('hidden-important');
+
                 break;
             default:
                 this.node('#header-bottom')?.classList.remove('hidden-important');
+                this.node('#header-layout')?.classList.remove('hidden-important');
                 break;
         }
     }
@@ -98,7 +107,7 @@ class HeaderComponent extends QBComponent<null> {
         this.eventLogo();
         this.eventScroll();
         this.eventCartDrawer();
-        this.eventDropDown();
+        this.eventDrawer();
         this.eventSearchInput();
     }
 
@@ -144,7 +153,7 @@ class HeaderComponent extends QBComponent<null> {
             this.children['cart-drawer'].showCartDrawer();
         });
     }
-    private eventDropDown() {
+    private eventDrawer() {
         this.element.querySelectorAll('.drop-down').forEach((dropdown) => {
             let timerId: NodeJS.Timeout;
             dropdown.addEventListener('mouseenter', () => {

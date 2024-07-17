@@ -1,7 +1,9 @@
+import cartService from '../api/cartService';
 import { ICartItem } from '../interface/cart';
 import { Product } from '../interface/product';
 import { Voucher } from '../interface/voucher';
 import Listener from '../lib/listener';
+import userReducer from './userReducer';
 
 class cartReducer {
     data: ICartItem[] = [];
@@ -11,6 +13,19 @@ class cartReducer {
         Listener.on('cart-change', () => {
             this.saveCartInLocalStorage();
         });
+    }
+
+    async loadCartOnServerByUser(id: string) {
+        const cartOnSv = await cartService.getCartByUserId(id);
+
+        if (cartOnSv) {
+            console.log(...cartOnSv.cart);
+
+            this.data.push(...cartOnSv.cart);
+            console.log(this.data);
+
+            Listener.emit('cart-change');
+        }
     }
     loadCartInLocalStorage() {
         const cart = localStorage.getItem('cart');
@@ -23,7 +38,14 @@ class cartReducer {
     saveCartInLocalStorage() {
         localStorage.setItem('cart', JSON.stringify(this.data));
     }
+
+    synCartOnServer() {
+        const userId = userReducer.getData?.userId;
+        cartService.synsCartOnServer(this.data, userId!);
+    }
     get getData() {
+        console.log(this.data);
+
         return this.data;
     }
     get getTotal() {
@@ -67,6 +89,10 @@ class cartReducer {
 
     get getQuantityChecked() {
         return this.data.filter((item) => item.checked).length;
+    }
+
+    get getCheckedItems() {
+        return this.data.filter((item) => item.checked);
     }
 
     get getFinalTotal() {
@@ -124,6 +150,15 @@ class cartReducer {
         this.data = [];
     }
 
+    checkout() {
+        this.data = this.data.filter((item) => !item.checked);
+        this.voucher = [];
+        Listener.emit('cart-change');
+    }
+    checkAll() {
+        this.data = this.data.map((item) => ({ ...item, checked: true }));
+        Listener.emit('cart-change');
+    }
     addVoucher(voucher: Voucher) {
         try {
             const index = this.voucher.findIndex((item) => item.code == voucher.code);
@@ -135,6 +170,13 @@ class cartReducer {
         } catch (error) {
             throw error;
         }
+    }
+
+    clear() {
+        this.data = [];
+        this.voucher = [];
+        localStorage.removeItem('cart');
+        Listener.emit('cart-change');
     }
 }
 

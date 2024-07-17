@@ -8,7 +8,9 @@ class RelatedProductCard extends QBComponent<ProductWithCategoryAndBrand> {
     protected markup: () => string = () => {
         return /*html*/ `
             <div class="p-3 rounded shadow">
-                    <img class="aspect-[4/3] object-contain image-product" src="${this.props.image}" alt="">
+                    <img class="aspect-[4/3] w-full text-center object-contain image-product" src="${
+                        this.props.image
+                    }" alt="">
                     <h3 class="text-lg font-semibold text-gray-600 pt-3">${this.props.name}</h3>
                     <p class="text-gray-400 text-sm">${this.props.brandDetails.name}</p>
                     <p class="text-red-800 font-semibold">${prd.sl(this.props)}</p>
@@ -26,7 +28,7 @@ interface RelatedProductProps {
     id: string;
 }
 interface RelatedProductState {
-    lsProduct: ProductWithCategoryAndBrand[];
+    lsProduct: ProductWithCategoryAndBrand[] | Product[];
 }
 class RelatedProduct extends QBComponent<RelatedProductProps, RelatedProductState> {
     markup = () => {

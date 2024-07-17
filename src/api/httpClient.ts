@@ -70,10 +70,10 @@ axiosClient.interceptors.response.use(
                 case 422:
                 case 500:
                 case 503:
-                    toastr.error(errorMessage);
+                    // toastr.error(errorMessage);
                     break;
                 default:
-                    toastr.error('Unknown Error');
+                    // toastr.error('Unknown Error');
                     break;
             }
         } else if (error.request) {

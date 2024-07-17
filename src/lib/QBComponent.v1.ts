@@ -1,12 +1,13 @@
 import { QBComponentInstance } from './QBComponent';
+import QBRouter from './QBRouter';
 
 class QBComponent<T = {}, S = {}> {
     /**
      * author: Quoc Bao
-     * version: 1.1.2
-     * status: stable (09-07-2024)
+     * version: 1.1.3
+     * status: stable (14-07-2024)
      * type: class
-     * last update: 13-07-2024
+     * last update: 14-07-2024
      * last update by: Quoc Bao
      * date: 07-07-2024
      * description: Base class for all components
@@ -36,11 +37,13 @@ class QBComponent<T = {}, S = {}> {
          * set props and initailize state,
          * define path template
          */
+
         if (data) {
             this.props = data;
         } else {
             this.props = {} as T;
         }
+
         this.element.style.display = 'contents';
     }
 
@@ -86,7 +89,7 @@ class QBComponent<T = {}, S = {}> {
             await this.loadTemplate();
             this.renderUI();
             this.parent.appendChild(this.element);
-            this.preventObverse();
+            this.preventDefault();
             this.addEventListener();
             this.effect();
             await this.affterRender();
@@ -118,7 +121,7 @@ class QBComponent<T = {}, S = {}> {
         }
     }
 
-    protected setState(newState: { [key: string]: unknown }) {
+    protected setState(newState: Partial<S>) {
         /** INFO: update state and trigger re-render
          * @param newState: new state
          * @param newState.key: key of state
@@ -136,7 +139,7 @@ class QBComponent<T = {}, S = {}> {
         // run when state change
         this.onChange();
     }
-    protected setStateWithoutRender(newState: { [key: string]: unknown }) {
+    protected setStateWithoutRender(newState: Partial<S>) {
         /** INFO: update state and not trigger re-render, this supoport for animation (like, isShow, isHide,...)
          *  WARN: Don't recomend use that
          * @param newState: new state
@@ -153,9 +156,13 @@ class QBComponent<T = {}, S = {}> {
     }
 
     protected reRender() {
+        const srcollY = window.scrollY;
         this.renderUI();
-        this.preventObverse();
+        this.preventDefault();
         this.addEventListener();
+        setTimeout(() => {
+            window.scrollTo(0, srcollY);
+        });
     }
     private async loadTemplate() {
         if (this.pathTemplate !== '') {
@@ -256,7 +263,16 @@ class QBComponent<T = {}, S = {}> {
         if (elm !== null) {
             elm.addEventListener(event, callback);
         } else {
-            console.assert(this.fisrtRender, 'Element not found ', selector, ' in sign event');
+            // console.assert(this.fisrtRender, 'Element not found ', selector, ' in sign event');
+        }
+    }
+    protected signEventAll(selector: string, event: string, callback: (e: Event) => void) {
+        const elms = this.element.querySelectorAll(selector) as NodeListOf<HTMLElement>;
+        if (elms !== null) {
+            elms.forEach((elm) => {
+                elm.addEventListener(event, callback);
+            });
+        } else {
         }
     }
 
@@ -269,10 +285,11 @@ class QBComponent<T = {}, S = {}> {
     protected rejectRender() {
         this.isReject = true;
     }
-    private preventObverse() {
+    private preventDefault() {
         this.element.querySelectorAll('a').forEach((a) => {
             a.addEventListener('click', (e) => {
                 e.preventDefault();
+                QBRouter.nav(a.getAttribute('href') as string);
             });
         });
         this.element.querySelectorAll('form').forEach((form) => {

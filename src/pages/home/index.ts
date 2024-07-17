@@ -1,6 +1,7 @@
 import QBComponent from '../../lib/QBComponent';
 import HomeCategory from './partials/Home.Category';
 import HomeProductSection from './partials/Home.ProductSection';
+import HomeSectionHotSale from './partials/Home.SectionHotSale';
 
 class Home extends QBComponent<null> {
     constructor() {
@@ -10,8 +11,13 @@ class Home extends QBComponent<null> {
 
     protected renderUI(): void {
         super.renderUI();
+        this.renderSectionHotSale();
         this.renderCategorySection();
         this.renderProductSection();
+    }
+
+    private renderSectionHotSale() {
+        this.renderComponent('#section-hot-sale', new HomeSectionHotSale());
     }
 
     private renderCategorySection() {

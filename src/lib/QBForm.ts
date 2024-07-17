@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import FormContext from './FormContext';
 import QBComponent from './QBComponent';
 
@@ -30,7 +31,7 @@ class QBForm extends QBComponent {
     protected addEventListener(): void {
         this.element.querySelectorAll('input').forEach((input) => {
             input.addEventListener('input', () => {
-                this.validateFidld();
+                this.validateField();
             });
             input.addEventListener('click', () => {
                 this.currentFocus = input.name;
@@ -60,7 +61,9 @@ class QBForm extends QBComponent {
         return this.isValid;
     }
 
-    private validateFidld() {
+    private validateField() {
+        // this.setFormFieldData();
+
         if (this.isSubmited) {
             this.validate();
             this.reRender();
@@ -75,7 +78,6 @@ class QBForm extends QBComponent {
     protected error(name: string): FieldError | undefined {
         const errorObj = this.erors.find((error) => error.name === name) as FieldError;
         if (!errorObj) {
-            console.warn('field not found');
             return undefined;
         }
         return errorObj as FieldError;
@@ -138,6 +140,15 @@ class QBForm extends QBComponent {
             const input = this.field(field.name);
             if (input) {
                 input.value = field.value;
+            }
+        });
+    }
+
+    protected setDefaultValue(data: {}) {
+        _.each(data, (value, key) => {
+            const input = this.field(key);
+            if (input) {
+                input.value = value;
             }
         });
     }

@@ -1,6 +1,8 @@
 import { ProductDetail } from '../../../interface/product';
 import QBComponent from '../../../lib/QBComponent';
+import cartReducer from '../../../store/cartReducer';
 import { prd } from '../../../util/productUtils';
+import toast from '../../../util/toast';
 
 class ProductDetailRright extends QBComponent<ProductDetail> {
     protected markup: () => string = () => {
@@ -137,6 +139,14 @@ class ProductDetailRright extends QBComponent<ProductDetail> {
                 </div>
         `;
     };
+
+    // event
+    protected addEventListener(): void {
+        this.signEvent('#btn-add-to-cart', 'click', () => {
+            cartReducer.addProductToCart(this.props);
+            toast.success('Add to cart success');
+        });
+    }
 }
 
 export default ProductDetailRright;

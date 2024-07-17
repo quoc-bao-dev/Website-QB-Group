@@ -5,6 +5,10 @@ const authenService = {
         const res = await axiosClient.post('authen/login', { email, password });
         return res.data;
     },
+    register: async (data: any) => {
+        const res = await axiosClient.post('authen/register', data);
+        return res.data;
+    },
     verifyToken: async (token: string) => {
         const res = await axiosClient.post('authen/verify-token', { accessToken: token });
         return res.data;

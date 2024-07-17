@@ -8,7 +8,25 @@ class QBRouter {
     private routes: Route[] = [];
     private rootElement: HTMLElement | null = null;
 
-    // eval(`new ${component}.render()`);
+    private paramUrl: any = null;
+    private querryUrl: any = null;
+
+    private setParam(param: any) {
+        this.paramUrl = param;
+    }
+
+    private setQuerry(query: any) {
+        this.querryUrl = query;
+    }
+
+    get param() {
+        return this.paramUrl;
+    }
+
+    get querry() {
+        return this.querryUrl;
+    }
+
     route(path: string, component: any) {
         /** Define a route for the application */
         this.routes.push({ path, component });
@@ -21,6 +39,10 @@ class QBRouter {
 
     private navigate(path: string) {
         /** Navigate to a route */
+        if (path === '#') {
+            return;
+        }
+
         const { route, params, queryParams } = this.matchRoute(path);
         if (!route) {
             if (this.routes.find((route) => route.path === '*')) {
@@ -35,11 +57,12 @@ class QBRouter {
             this.rootElement.innerHTML = '';
             const componentInstance = new route.component();
             componentInstance.render(this.rootElement, { params, queryParams });
+            this.setParam(params);
+            this.setQuerry(queryParams);
             Listener.emit('page-change');
         } else {
             console.error('Root element not found');
         }
-
         Listener.emit('page-change');
     }
 

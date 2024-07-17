@@ -15,9 +15,9 @@ class ProductCard extends QBComponent<Product> {
     protected markup = () => {
         return /*html*/ `
         <!-- item -->
-                <div class="w-full rounded overflow-hidden shadow relative">
+                <div class="w-full h-full rounded overflow-hidden shadow relative flex flex-col gap-3">
                     <img class="w-full aspect-[4/3] object-contain pt-4" src="${this.props.image}" alt="" id="link">
-                    <div class="p-4">
+                    <div class="p-4 flex flex-col flex-1">
                         <h3 class="font-bold text-xl text-gray-600">
                             ${this.props.name}
                         </h3>
@@ -51,7 +51,7 @@ class ProductCard extends QBComponent<Product> {
                                 })
                                 .join('')}
                         </div>
-                        <div class="mt-3 flex justify-between items-end text-gray-400 text-sm ">
+                        <div class="mt-auto flex justify-between items-end text-gray-400 text-sm ">
                             <div class="">
                                 <p class=" text-gray-400 text-lg line-through"> ${prd.od(this.props)}</p>
                                 <div class="flex gap-4 ">

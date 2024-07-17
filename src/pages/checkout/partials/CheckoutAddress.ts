@@ -1,12 +1,31 @@
+import Listener from '../../../lib/listener';
 import QBComponent from '../../../lib/QBComponent';
 import QBForm from '../../../lib/QBForm';
+import checkoutReducer from '../../../store/checkoutReducer';
 
 class AddressForm extends QBForm {
     constructor() {
         super();
         this.formContextKey = 'checkout-address';
+
+        Listener.on(
+            'load-checkout',
+            () => {
+                this.setLoadForm();
+            },
+            'checkout-address'
+        );
+        Listener.on(
+            'set-address',
+            () => {
+                this.setLoadForm();
+            },
+            'set-address'
+        );
     }
+    private add = checkoutReducer.getAdderess;
     protected markup: () => string = () => {
+        const add = this.add;
         return /*html*/ `
         <form class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Recipient Information -->
@@ -14,7 +33,9 @@ class AddressForm extends QBForm {
                                 <label for="recipientName" class="text-gray-600 font-bold text-lg">Recipient
                                     Name</label>
                                 <input type="text" name="recipientName" id="recipientName" placeholder="John Doe"
-                                    class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600">
+                                    class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600 ${
+                                        this.error('recipientName') ? 'border-red-500' : ''
+                                    }" ${add?.recipientName ? `value="${add?.recipientName}"` : ''}/>
                                     ${
                                         this.error('recipientName')
                                             ? `<p class="text-red-500 py-1">${this.error('recipientName')?.message}</p>`
@@ -26,7 +47,7 @@ class AddressForm extends QBForm {
                                 <input type="text" name="phone" id="phone" placeholder="(123) 456-7890"
                                     class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600 ${
                                         this.error('phone') ? 'border-red-500' : ''
-                                    }" />
+                                    }" ${add?.phone ? `value="${add?.phone}"` : ''}/>
                                 ${
                                     this.error('phone')
                                         ? `<p class="text-red-500 py-1">${this.error('phone')?.message}</p>`
@@ -38,7 +59,7 @@ class AddressForm extends QBForm {
                                 <input type="text" name="address" id="address" placeholder="123 Main St"
                                     class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600 ${
                                         this.error('address') ? 'border-red-500' : ''
-                                    }" />
+                                    }" ${add?.address ? `value="${add?.address}"` : ''}/>
                                 ${
                                     this.error('address')
                                         ? `<p class="text-red-500 py-1">${this.error('address')?.message}</p>`
@@ -50,7 +71,7 @@ class AddressForm extends QBForm {
                                 <input type="text" name="city" id="city" placeholder="New York"
                                     class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600 ${
                                         this.error('city') ? 'border-red-500' : ''
-                                    }" />
+                                    }" ${add?.city ? `value="${add?.city}"` : ''}/>
                                 ${
                                     this.error('city')
                                         ? `<p class="text-red-500 py-1">${this.error('city')?.message}</p>`
@@ -58,14 +79,14 @@ class AddressForm extends QBForm {
                                 }
                             </div>
                             <div class="pb-3">
-                                <label for="state" class="text-gray-600 font-bold text-lg">State</label>
-                                <input type="text" name="state" id="state" placeholder="NY"
+                                <label for="district" class="text-gray-600 font-bold text-lg">District</label>
+                                <input type="text" name="district" id="district" placeholder="NY"
                                     class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600 ${
-                                        this.error('state') ? 'border-red-500' : ''
-                                    }" />
+                                        this.error('district') ? 'border-red-500' : ''
+                                    }" ${add?.district ? `value="${add?.district}"` : ''}/>
                                 ${
-                                    this.error('state')
-                                        ? `<p class="text-red-500 py-1">${this.error('state')?.message}</p>`
+                                    this.error('district')
+                                        ? `<p class="text-red-500 py-1">${this.error('district')?.message}</p>`
                                         : ''
                                 }
                             </div>
@@ -74,7 +95,7 @@ class AddressForm extends QBForm {
                                 <input type="text" name="postalCode" id="postalCode" placeholder="10001"
                                     class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600 ${
                                         this.error('postalCode') ? 'border-red-500' : ''
-                                    }" />
+                                    }" ${add?.postalCode ? `value="${add?.postalCode}"` : ''} />
                                 ${
                                     this.error('postalCode')
                                         ? `<p class="text-red-500 py-1">${this.error('postalCode')?.message}</p>`
@@ -86,7 +107,7 @@ class AddressForm extends QBForm {
                                 <input type="text" name="country" id="country" placeholder="USA"
                                     class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600 ${
                                         this.error('country') ? 'border-red-500' : ''
-                                    }" />
+                                    }" ${add?.country ? `value="${add?.country}"` : ''} />
                                 ${
                                     this.error('country')
                                         ? `<p class="text-red-500 py-1">${this.error('country')?.message}</p>`
@@ -98,8 +119,12 @@ class AddressForm extends QBForm {
 -                                    Method</label>
 -                                <select name="deliveryMethod" id="deliveryMethod"
 -                                    class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600">
--                                    <option value="standard">Standard Delivery</option>
--                                    <option value="express">Express Delivery</option>
+-                                    <option value="standard" ${
+            add?.deliveryMethod === 'standard' ? 'selected' : ''
+        }>Standard Delivery</option>
+-                                    <option value="express" ${
+            add?.deliveryMethod === 'express' ? 'selected' : ''
+        }>Express Delivery</option>
 -                                </select>
                              </div>
                         </form>
@@ -110,7 +135,7 @@ class AddressForm extends QBForm {
     protected schema(): void {
         this.register('recipientName', (value) => {
             if (!value) {
-                return `errorrrr........`;
+                return `Please enter recipient name`;
             }
             if (value.length < 3) {
                 return `Please enter at least 3 characters`;
@@ -136,9 +161,9 @@ class AddressForm extends QBForm {
             }
         });
 
-        this.register('state', (value) => {
+        this.register('district', (value) => {
             if (!value) {
-                return `Please enter state`;
+                return `Please enter district`;
             }
         });
 
@@ -161,14 +186,47 @@ class AddressForm extends QBForm {
             }
         });
     }
+
+    private setLoadForm() {
+        const address = checkoutReducer.getAdderess;
+        if (address) {
+            this.add = address;
+            this.setDefaultValue(address);
+            this.add = null;
+        }
+    }
 }
 
 class CheckoutAddress extends QBComponent {
+    constructor() {
+        super(null);
+        Listener.on(
+            'set-list-user-add',
+            () => {
+                this.reRender();
+            },
+            'set-list-user-add'
+        );
+    }
     protected markup: () => string = () => {
         return /*html*/ `
         <div class="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md">
                         <h2 class="text-2xl font-bold text-gray-700 mb-6">Payment Information</h2>
                         <div class="contents" id="address-form"></div>
+                        ${
+                            checkoutReducer.getLsUserAddress.length > 0
+                                ? /*html*/ `
+                            <div class ="pt-5">
+                            <p class ="font-bold text-gray-700" > Choice your address:</p>
+                            <select name="cur-address" id="cur-address" class="w-full mt-1 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-600" >
+                                    ${checkoutReducer.getLsUserAddress.map((address, index) => {
+                                        return /*html*/ `<option value="${index}">${address?.address}</option>`;
+                                    })}
+                            </select>
+                        </div>
+                            `
+                                : ''
+                        }
                     </div>
         `;
     };
@@ -179,6 +237,19 @@ class CheckoutAddress extends QBComponent {
     }
     private renderAddressForm() {
         this.renderComponent('#address-form', new AddressForm());
+    }
+
+    // event
+    protected addEventListener(): void {
+        this.eventChangeAdd();
+    }
+    private eventChangeAdd() {
+        this.signEvent('#cur-address', 'change', () => {
+            const index = this.node('#cur-address') as HTMLSelectElement;
+            const address = checkoutReducer.getLsUserAddress[Number(index.value)];
+            // checkoutReducer.saveAddress(address);
+            checkoutReducer.setAddress(address);
+        });
     }
 }
 

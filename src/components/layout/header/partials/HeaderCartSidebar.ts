@@ -4,6 +4,7 @@ import QBRouter from '../../../../lib/QBRouter';
 import Listener from '../../../../lib/listener';
 import { ICartItem } from '../../../../interface/cart';
 import { prd, usd } from '../../../../util/productUtils';
+import checkoutReducer from '../../../../store/checkoutReducer';
 
 class HeaderCartItem extends QBComponent<ICartItem> {
     constructor(props: ICartItem) {
@@ -33,7 +34,7 @@ class HeaderCartItem extends QBComponent<ICartItem> {
                                                 <div class="grid place-items-center btn-minus">
                                                     <i class="fa-solid fa-minus"></i>
                                                 </div>
-                                                <input class="focus:ring-0 border-0 bg-transparent p-0 text-center" id="input-quantity" min="1" type="text" value="${
+                                                <input class="focus:ring-0 border-0 bg-transparent p-0 text-center input-quantity"  min="1" type="text" value="${
                                                     this.props.quantity
                                                 }"
                                                     class="w-full text-center bg-transparent border-0 p-0 m-0 outline-none">
@@ -81,7 +82,7 @@ class HeaderCartItem extends QBComponent<ICartItem> {
     }
 
     private enventChangeQuantity() {
-        this.signEvent('#input-quantity', 'change', () => {
+        this.signEvent('.input-quantity', 'change', () => {
             const value = this.getQuantity();
             cartReducer.changeQuantity(this.props.product, value);
         });
@@ -89,7 +90,7 @@ class HeaderCartItem extends QBComponent<ICartItem> {
 
     // support
     private getQuantity() {
-        return Number((this.element.querySelector('#input-quantity') as HTMLInputElement).value);
+        return Number((this.element.querySelector('.input-quantity') as HTMLInputElement).value);
     }
 }
 
@@ -162,7 +163,7 @@ class HeaderCartSidebar extends QBComponent<{}, HeaderCartState> {
 
                         <div class="flex gap-2 mt-4">
                             <button
-                                class="w-full h-[48px] bg-blue-900 text-white font-medium rounded grid place-items-center ">
+                                class="w-full h-[48px] bg-blue-900 text-white font-medium rounded grid place-items-center " id="btn-checkout">
                                 Check Out
                             </button>
                             <button
@@ -191,7 +192,16 @@ class HeaderCartSidebar extends QBComponent<{}, HeaderCartState> {
     // event
     protected addEventListener(): void {
         this.eventCartDrawer();
+        this.eventCheckout();
     }
+
+    private eventCheckout = () => {
+        this.signEvent('#btn-checkout', 'click', () => {
+            cartReducer.checkAll();
+            checkoutReducer.clear();
+            QBRouter.nav('/checkout');
+        });
+    };
 
     private eventCartDrawer = () => {
         this.signEvent('#close-cart-btn', 'click', this.hideCart);
