@@ -2,7 +2,7 @@ import { productService } from '../../../../api/productService';
 import { Product } from '../../../../interface/product';
 import QBComponent from '../../../../lib/QBComponent';
 import QBRouter from '../../../../lib/QBRouter';
-import Listener from '../../../../lib/listener';
+import signal from '../../../../lib/listener';
 import { prd } from '../../../../util/productUtils';
 
 class SearchResultItem extends QBComponent<Product> {
@@ -46,7 +46,7 @@ class HeaderSearchResult extends QBComponent<{}, HeaderSearchResultState> {
             isShow: false,
         };
 
-        Listener.on(
+        signal.on(
             'page-change',
             () => {
                 this.clearSearchResult();

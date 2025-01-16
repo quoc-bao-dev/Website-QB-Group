@@ -14,18 +14,23 @@ type FieldRegister = {
     name: string;
     validate: (value: any) => string | undefined;
 };
-class QBForm extends QBComponent {
+class QBForm<T = {}, S = {}> extends QBComponent<T, S> {
     protected isValid: boolean = true;
     protected isSubmited: boolean = false;
+    protected isFillAll: boolean = false;
     private erors: FieldError[] = [];
     protected fieldValidate: FieldRegister[] = [];
     protected fields: FormField[] = [];
     protected formContextKey = '';
     protected currentFocus = '';
+    protected formFill: { [key: string]: any } = {};
+    protected cacheKey: string = '';
+    protected defaultValue: { [key: string]: any } | null = null;
 
-    protected async affterRender(): Promise<void> {
+    protected async afterRender(): Promise<void> {
         this.schema();
         this.signFormContext();
+        this.setDefaultValueForm();
     }
 
     protected addEventListener(): void {
@@ -40,6 +45,7 @@ class QBForm extends QBComponent {
     }
     protected register(name: string, validate: (value: any) => string | undefined) {
         this.fieldValidate.push({ name, validate });
+        this.formFill[name] = this.field(name)!.value;
     }
 
     private validate() {
@@ -61,17 +67,44 @@ class QBForm extends QBComponent {
         return this.isValid;
     }
 
-    private validateField() {
-        // this.setFormFieldData();
+    private checkIsFillAll() {
+        return Object.keys(this.formFill).every((key) => {
+            return this.field(key)!.value != '';
+        });
+    }
 
+    private validateField() {
         if (this.isSubmited) {
+            this.isFillAll = this.checkIsFillAll();
             this.validate();
             this.reRender();
             this.setFormData();
             if (this.currentFocus != '') {
                 this.field(this.currentFocus)!.focus();
             }
+        } else {
+            if (this.checkIsFillAll()) {
+                this.isFillAll = true;
+                this.setFormFieldData();
+                this.reRender();
+                this.setFormData();
+                if (this.currentFocus != '') {
+                    this.field(this.currentFocus)!.focus();
+                }
+            } else {
+                this.isFillAll = false;
+                this.setFormFieldData();
+                this.reRender();
+                this.setFormData();
+                if (this.currentFocus != '') {
+                    this.field(this.currentFocus)!.focus();
+                }
+            }
         }
+    }
+
+    protected clearError() {
+        this.erors = [];
     }
 
     // ---------------------- get field ---------------------
@@ -99,8 +132,19 @@ class QBForm extends QBComponent {
         this.setFormFieldData();
         return data;
     }
+    protected reRender(): void {
+        super.reRender();
+        if (this.cacheKey != '') {
+            this.fields = JSON.parse(sessionStorage.getItem(this.cacheKey) as string);
+            this.setFormData();
+        }
+    }
 
     protected async getDataForm() {
+        if (this.cacheKey != '') {
+            this.fields = JSON.parse(sessionStorage.getItem(this.cacheKey) as string);
+            this.setFormData();
+        }
         this.validate();
         if (!this.isSubmited) {
             this.isSubmited = true;
@@ -126,13 +170,26 @@ class QBForm extends QBComponent {
     // ------------------------ form context -----------------------
 
     // support
+
+    private cacheData() {
+        if (this.cacheKey != '') {
+            sessionStorage.setItem(this.cacheKey, JSON.stringify(this.fields));
+        }
+    }
     private setFormFieldData() {
         this.element.querySelectorAll('input, select, textarea').forEach((input) => {
             const _input = input as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
             const name = _input.getAttribute('name')!;
             const value = _input.value;
-            this.fields.push({ name, value });
+            const indexField = this.fields.findIndex((field) => field.name === name);
+            if (indexField >= 0) {
+                this.fields[indexField].value = value;
+            } else {
+                this.fields.push({ name, value });
+            }
         });
+
+        this.cacheData();
     }
 
     private setFormData() {
@@ -152,56 +209,17 @@ class QBForm extends QBComponent {
             }
         });
     }
+
+    private setDefaultValueForm() {
+        if (this.defaultValue != null) {
+            _.each(this.defaultValue, (value, key) => {
+                const input = this.field(key);
+                if (input) {
+                    input.value = value;
+                }
+            });
+        }
+    }
 }
 
 export default QBForm;
-
-// support function
-
-function readFile(file: File): Promise<string | ArrayBuffer | null> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(reader.error);
-
-        reader.readAsText(file); // Đọc tệp dưới dạng text, có thể thay bằng readAsDataURL hoặc readAsArrayBuffer nếu cần
-    });
-}
-
-async function getFormData(selector: string): Promise<{ [key: string]: any } | null> {
-    const form = document.querySelector(selector) as HTMLFormElement;
-
-    if (!form) {
-        console.error('Form not found with the given selector:', selector);
-        return null;
-    }
-
-    const formData: { [key: string]: any } = {};
-    const inputs = form.elements;
-
-    for (let i = 0; i < inputs.length; i++) {
-        const input = inputs[i] as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | any;
-        if (input.name) {
-            switch (input.type) {
-                case 'checkbox':
-                    formData[input.name] = input.checked;
-                    break;
-                case 'radio':
-                    if (input.checked) {
-                        formData[input.name] = input.value;
-                    }
-                    break;
-                case 'file':
-                    if (input.files && input.files.length > 0) {
-                        formData[input.name] = await readFile(input.files[0]);
-                    }
-                    break;
-                default:
-                    formData[input.name] = input.value;
-            }
-        }
-    }
-
-    return formData;
-}

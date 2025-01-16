@@ -6,7 +6,7 @@ export const usd = (price: number) =>
               style: 'currency',
               currency: 'USD',
           })
-        : '';
+        : '$0';
 
 export const prd = {
     sl: (prod: Product | ProductDetail) =>
@@ -25,4 +25,14 @@ export const prd = {
         });
     },
     pr: (prod: Product | ProductDetail) => (prod?.price ? (prod.price * (100 - prod.discount)) / 100 : 0),
+};
+
+export const p = {
+    sl: (price: number, discout: number) => {
+        return (price * (100 - discout)) / 100;
+    },
+};
+
+export const n = (num: number) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };

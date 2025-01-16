@@ -1,5 +1,6 @@
 import { AddressInfo } from '../interface/order';
-import Listener from '../lib/listener';
+import { Voucher } from '../interface/voucher';
+import signal from '../lib/listener';
 
 class checkoutReducer {
     constructor() {
@@ -9,6 +10,7 @@ class checkoutReducer {
     private address: AddressInfo | null = null;
     private appTransId: string = '';
     private paymentMethod: string = '';
+    private voucher: Voucher[] = [];
     get getAdderess() {
         return this.address;
     }
@@ -25,6 +27,10 @@ class checkoutReducer {
         return this.lsUserAddress;
     }
 
+    get getVoucher() {
+        return this.voucher;
+    }
+
     private load() {
         const address = sessionStorage.getItem('address');
         if (address) {
@@ -39,8 +45,13 @@ class checkoutReducer {
         if (paymentMethod) {
             this.paymentMethod = paymentMethod;
         }
+
+        const lsVoucher = sessionStorage.getItem('voucher');
+        if (lsVoucher) {
+            this.voucher = JSON.parse(lsVoucher);
+        }
         if (this.appTransId || this.address || this.paymentMethod) {
-            Listener.emit('load-checkout');
+            signal.emit('load-checkout');
         }
     }
 
@@ -51,12 +62,12 @@ class checkoutReducer {
 
     setAddress(address: AddressInfo) {
         this.address = address;
-        Listener.emit('set-address');
+        signal.emit('set-address');
     }
 
     setListAddress(address: AddressInfo[]) {
         this.lsUserAddress = address;
-        Listener.emit('set-list-user-add');
+        signal.emit('set-list-user-add');
     }
 
     saveAppTransId(appTransId: string) {
@@ -69,11 +80,17 @@ class checkoutReducer {
         sessionStorage.setItem('paymentMethod', paymentMethod);
     }
 
+    saveVoucher(voucher: Voucher[]) {
+        this.voucher = voucher;
+        sessionStorage.setItem('voucher', JSON.stringify(voucher));
+    }
+
     clear() {
         this.address = null;
         this.appTransId = '';
         this.paymentMethod = '';
         this.lsUserAddress = [];
+        this.voucher = [];
         sessionStorage.removeItem('address');
         sessionStorage.removeItem('appTransId');
         sessionStorage.removeItem('paymentMethod');

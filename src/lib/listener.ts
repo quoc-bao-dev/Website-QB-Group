@@ -4,6 +4,6 @@ export type TListener = {
     key: string;
     fn: Function;
 };
-const Listener = new EventBus();
+const signal = new EventBus();
 
-export default Listener;
+export default signal;

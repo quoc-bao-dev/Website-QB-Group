@@ -1,8 +1,9 @@
 import paymentService from '../../../api/paymentService';
 import { ICartItem } from '../../../interface/cart';
 import { OrderInput } from '../../../interface/order';
+import { Voucher } from '../../../interface/voucher';
 import FormContext from '../../../lib/FormContext';
-import Listener from '../../../lib/listener';
+import signal from '../../../lib/listener';
 import QBComponent from '../../../lib/QBComponent';
 import QBForm from '../../../lib/QBForm';
 import cartReducer from '../../../store/cartReducer';
@@ -18,7 +19,21 @@ class OrderItem extends QBComponent<ICartItem> {
     }
     protected markup: () => string = () => {
         return /*html*/ `
-        <td class="p-2">${this.props.product.name}</td>
+        <td class="p-2 ">${this.props.product.name}</td>
+        <td class="p-2 group relative">
+
+       <p class="text-overflow-ellipsis line-clamp-1" >${this.props.product.option?.color.value} ${
+            this.props.product.option?.ram.value
+        } ${this.props.product.option?.storage.value}    
+        </p> 
+
+        <div class="absolute top-0 right-0 hidden group-hover:block p-2 bg-slate-200 rounded" >
+        ${this.props.product.option?.color.value} ${this.props.product.option?.ram.value} ${
+            this.props.product.option?.storage.value
+        }  
+        </div>
+
+        </td>
             <td class="p-2">${prd.sl(this.props.product)}</td>
             <td class="p-2 text-center">${this.props.quantity}</td>
         <td class="p-2">${usd(prd.pr(this.props.product) * this.props.quantity)}</td>
@@ -98,6 +113,7 @@ class PaymentMothodForm extends QBForm {
         try {
             /// validata success
             if (addressInfo) {
+                checkoutReducer.saveVoucher(cartReducer.getVouchers);
                 checkoutReducer.saveAddress(addressInfo);
 
                 if (paymentMthod === 'zalopay') {
@@ -118,7 +134,7 @@ class PaymentMothodForm extends QBForm {
                     checkoutReducer.saveAddress(addressInfo);
                     checkoutReducer.saveAppTransId('');
                     checkoutReducer.savePaymentMethod(paymentMthod);
-                    Listener.emit('payment-handler');
+                    signal.emit('payment-handler');
                 }
             }
         } catch (error: any) {
@@ -129,6 +145,10 @@ class PaymentMothodForm extends QBForm {
 
 class CheckoutInfo extends QBComponent {
     protected markup: () => string = () => {
+        if (cartReducer.getVouchers.length > 0) checkoutReducer.saveVoucher(cartReducer.getVouchers);
+        const voucher =
+            cartReducer.getVouchers.length > 0 ? cartReducer.getVouchers : (checkoutReducer.getVoucher as Voucher[]);
+
         return /*html*/ `
         <div class="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md">
                         <h2 class="text-2xl font-bold text-gray-700 mb-6">Payment Information</h2>
@@ -139,6 +159,7 @@ class CheckoutInfo extends QBComponent {
                                     <thead>
                                         <tr>
                                             <th class="border-b-2 p-2">Product name</th>
+                                            <th class="border-b-2 p-2">Option</th>
                                             <th class="border-b-2 p-2">Price</th>
                                             <th class="border-b-2 p-2">Quantity</th>
                                             <th class="border-b-2 p-2">Amount</th>
@@ -151,11 +172,11 @@ class CheckoutInfo extends QBComponent {
                                 <hr class = "mt-4"/>
                                 <div class="mt-4">
                                    ${
-                                       cartReducer.getDiscountPercent > 0
+                                       voucher && voucher?.length > 0
                                            ? /*html*/ `
                                      <div class="flex justify-between">
                                         <span>Discount:</span>
-                                        <span>${cartReducer.getDiscountPercent}%</span>
+                                        <span>${voucher.reduce((a, b) => a + b.discountPercentage, 0)}%</span>
                                     </div>
                                     `
                                            : ''

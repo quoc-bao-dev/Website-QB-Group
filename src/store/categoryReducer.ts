@@ -9,9 +9,7 @@ class categoryReducer {
         try {
             const data = await categoryService.getCategory();
             this.data = data;
-        } catch (error) {
-            console.log(error);
-        }
+        } catch (error) {}
     }
 
     getCategoryId(name: string) {

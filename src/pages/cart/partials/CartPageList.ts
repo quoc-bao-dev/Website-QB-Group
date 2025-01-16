@@ -7,7 +7,7 @@ class CartItem extends QBComponent<ICartItem> {
     protected markup: () => string = () => {
         return /*html*/ `
         <!-- cart items -->
-                <div class="p-3 border border-gray-200 rounded">
+                <div class="p-3 border border-gray-200 rounded bg-white">
                     <div class="grid grid-cols-12 gap-3">
                         <div class="col-span-2 grid place-content-center">
                             <!-- product image -->
@@ -15,26 +15,32 @@ class CartItem extends QBComponent<ICartItem> {
                         </div>
                         <div class="col-span-8">
                             <!-- product name -->
-                            <h2 class="text-gray-600 text-2xl font-semibold pb-1">${this.props.product.name}</h2>
+                            <h2 class="text-gray-600 text-lg font-semibold pb-1">${this.props.product.name}</h2>
                             <div class="grid grid-cols-12 gap-3">
                                 <div class="col-span-6">
                                     <div class="grid grid-cols-2">
                                         <p class="text-gray-700 font-semibold">Color:</p>
                                         <div class="">
-                                            <div class="w-10 h-5 rounded bg-red-700"></div>
+                                            <div class="w-10 h-5 rounded bg-[${
+                                                this.props.product.option?.color.color
+                                            }]"></div>
                                         </div>
                                     </div>
                                     <div class="grid grid-cols-2">
                                         <p class="text-gray-700 font-semibold">Ram:</p>
-                                        <p class="text-gray-700 font-semibold">32GB</p>
+                                        <p class="text-gray-700 font-semibold">${
+                                            this.props.product.option?.ram.value
+                                        }</p>
                                     </div>
                                     <div class="grid grid-cols-2">
                                         <p class="text-gray-700 font-semibold">Rom:</p>
-                                        <p class="text-gray-700 font-semibold">64GB</p>
+                                        <p class="text-gray-700 font-semibold">${
+                                            this.props.product.option?.storage.value
+                                        }</p>
                                     </div>
                                 </div>
                                 <div class="col-span-3">
-                                    <p class="text-red-700 text-2xl font-semibold">${prd.sl(this.props.product)}</p>
+                                    <p class="text-red-700 text-lg font-semibold">${prd.sl(this.props.product)}</p>
                                 </div>
                                 <div class="col-span-3">
                                     <div class="py-2 px-3 bg-gray-200 text-gray-700 rounded grid grid-cols-3">
@@ -123,7 +129,7 @@ class CartPageListItem extends QBComponent {
     markup = () => {
         if (cartReducer.getData.length === 0) {
             return /*html*/ `
-            <div class="col-span-8 flex flex-col gap-4">
+            <div class="col-span-8 flex flex-col gap-4 ">
             <div class="w-full h-full grid place-items-center">
                     <h1 class="text-3xl font-semibold text-gray-500">Your cart is empty</h1>
                 </div>

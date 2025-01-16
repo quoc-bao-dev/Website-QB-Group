@@ -56,7 +56,7 @@ class RelatedProduct extends QBComponent<RelatedProductProps, RelatedProductStat
     };
 
     //api
-    protected async affterRender(): Promise<void> {
+    protected async afterRender(): Promise<void> {
         const result = await productService.getRelatedProduct(this.props.id);
         this.setState({
             lsProduct: result,

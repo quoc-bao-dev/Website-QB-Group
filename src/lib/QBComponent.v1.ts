@@ -92,7 +92,7 @@ class QBComponent<T = {}, S = {}> {
             this.preventDefault();
             this.addEventListener();
             this.effect();
-            await this.affterRender();
+            await this.afterRender();
             this.fisrtRender = false;
         } else {
             console.error('Container not found', selector, 'in render');
@@ -184,7 +184,7 @@ class QBComponent<T = {}, S = {}> {
     protected async beforeRender() {
         /** INFO: call before render (use check condition like role of user) */
     }
-    protected async affterRender() {
+    protected async afterRender() {
         /** INFO: call after render (use to call API) */
     }
     protected onChange() {
@@ -278,6 +278,9 @@ class QBComponent<T = {}, S = {}> {
 
     protected signEffect(cb: () => void, deps: string[]) {
         deps.forEach((key) => {
+            if (!this.effects[key]) {
+                this.effects[key] = [];
+            }
             this.effects[key].push(cb);
         });
     }

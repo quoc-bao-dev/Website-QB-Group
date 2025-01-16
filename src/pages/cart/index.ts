@@ -1,19 +1,18 @@
 import QBComponent from '../../lib/QBComponent';
 import QBRouter from '../../lib/QBRouter';
-import Listener from '../../lib/listener';
+import signal from '../../lib/listener';
 import userReducer from '../../store/userReducer';
 import CartPageInfo from './partials/CartPageInfo';
 import CartPageListItem from './partials/CartPageList';
 
 class CartPage extends QBComponent {
     constructor() {
-        super(null);
-        this.pathTemplate = '/src/pages/cart/index.html';
+        super();
         this.state = {
             trigger: false,
         };
 
-        Listener.on(
+        signal.on(
             'cart-change',
             () => {
                 this.setState({
@@ -23,6 +22,21 @@ class CartPage extends QBComponent {
             'cart-page-rerender'
         );
     }
+
+    protected markup: () => string = () => {
+        return /*html*/ `
+        <section class="section">
+    <div class="container">
+        <h1 class="text-3xl font-bold pb-5">Cart</h1>
+        <div class="grid grid-cols-12 gap-5">
+            <div class="contents" id="cart-list-container"></div>
+
+            <!-- cart info -->
+            <div class="contents" id="cart-info"></div>
+        </div>
+</section>
+        `;
+    };
 
     protected async beforeRender(): Promise<void> {
         const isLogin = await userReducer.verify();

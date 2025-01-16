@@ -1,10 +1,11 @@
 import cartReducer from '../../../../store/cartReducer';
 import QBComponent from '../../../../lib/QBComponent';
 import QBRouter from '../../../../lib/QBRouter';
-import Listener from '../../../../lib/listener';
+import signal from '../../../../lib/listener';
 import { ICartItem } from '../../../../interface/cart';
 import { prd, usd } from '../../../../util/productUtils';
 import checkoutReducer from '../../../../store/checkoutReducer';
+import toast from '../../../../util/toast';
 
 class HeaderCartItem extends QBComponent<ICartItem> {
     constructor(props: ICartItem) {
@@ -22,12 +23,18 @@ class HeaderCartItem extends QBComponent<ICartItem> {
                             <div class="col-span-8">
                                 <h3 class="text-base font-semibold text-gray-600">${this.props.product.name}</h3>
                                 <div class="">
-                                    <div class="flex gap-4 grid grid-cols-2">
+                                    <div class="flex items-center gap-4 grid grid-cols-2">
+                                        <div>
                                         <div class="flex gap-2 items-center">
                                             <p class="text-red-700 font-semibold flex items-center">${prd.sl(
                                                 this.props.product
                                             )}</p>
                                             x ${this.props.quantity}
+                                        </div>
+                                        <div class="flex gap-2 items-center text-gray-400">
+                                            <p>${this.props.product.option?.ram.value}</p>
+                                            <p>${this.props.product.option?.storage.value}</p>
+                                        </div>
                                         </div>
                                         <div class="p-2 bg-gray-200 text-gray-400 rounded overflow-hidden">
                                             <div class="grid grid-cols-3 ">
@@ -104,14 +111,14 @@ class HeaderCartSidebar extends QBComponent<{}, HeaderCartState> {
         this.state.trigger = false;
         this.state.isShow = false;
 
-        Listener.on(
+        signal.on(
             'cart-change',
             () => {
                 this.listenCart();
             },
             'cart-header'
         );
-        Listener.on(
+        signal.on(
             'page-change',
             () => {
                 this.hideCart();
@@ -197,9 +204,14 @@ class HeaderCartSidebar extends QBComponent<{}, HeaderCartState> {
 
     private eventCheckout = () => {
         this.signEvent('#btn-checkout', 'click', () => {
-            cartReducer.checkAll();
-            checkoutReducer.clear();
-            QBRouter.nav('/checkout');
+            const cartIems = cartReducer.getData.length;
+            if (cartIems > 0) {
+                cartReducer.checkAll();
+                checkoutReducer.clear();
+                QBRouter.nav('/checkout');
+            } else {
+                toast.error('Cart is empty');
+            }
         });
     };
 

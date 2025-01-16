@@ -1,7 +1,10 @@
 import commentService from '../../../api/commentService';
+import Star from '../../../components/common/Start';
 import { Product } from '../../../interface/product';
+import signal from '../../../lib/listener';
 import QBComponent from '../../../lib/QBComponent';
 import QBRouter from '../../../lib/QBRouter';
+import ImageCommentReduce from '../../../store/ImageCommentReduce';
 import userReducer from '../../../store/userReducer';
 import { date } from '../../../util/date';
 import toast from '../../../util/toast';
@@ -51,24 +54,30 @@ class TabDetails extends QBComponent {
     };
 }
 
-interface IProductComment {
+export interface IProductComment {
     productId: Product;
     userId: IUser;
     rating: number;
     comment: string;
+    images?: string[];
     _id: string;
     createdAt: string;
     updatedAt: string;
+    isShow: boolean;
 }
 interface TabCommentsState {
     lsComment: IProductComment[];
     lsImageCmt: string[];
+    fileLoadding: number;
+    files: File[];
+    rate: number;
+    cmtInput: string;
 }
 
 class CommentItem extends QBComponent<IProductComment> {
     protected markup: () => string = () => {
         return /*html*/ `
-        <div class="border border-gray-200 pt-2 pb-4 px-5 rounded">
+        <div class="border border-gray-200 pt-2 pb-4 px-5 rounded" id="cmt-${this.props._id}">
                 <div class="flex items-center gap-3">
                     ${
                         typeof this.props.userId === 'object' && this.props.userId.avatar
@@ -90,11 +99,72 @@ class CommentItem extends QBComponent<IProductComment> {
                     </div>
                 </div>
                 <div class="h-[1px] w-full bg-gray-200 my-2"></div>
+                ${
+                    this.props.images!?.length > 0
+                        ? /*html*/ `
+                    <div class="grid grid-cols-3 gap-2 pb-2">
+                        ${this.props.images
+                            ?.map((image) => {
+                                return /*html*/ `
+                            <img class="w-full h-full object-cover comment-image" src="${image}" alt="">
+                            `;
+                            })
+                            .join('')}
+                    </div>
+                `
+                        : ''
+                }
                 <div class="pt-1">
                     ${this.props.comment}
                 </div>
+                <div class="pt-2 flex item-center gap-4">
+                    <div class="flex items-center gap-1 text-gray-900">
+                        <p class="">0</p>
+                        <i class="fa-regular fa-thumbs-up "></i> 
+                    </div>
+                    <div class="flex items-center gap-1 text-gray-900"> 
+                        <p class="">0</p>
+                        <i class="fa-regular fa-thumbs-down "></i>
+                    </div>
+                    <div class="flex items-center gap-1 text-gray-900">
+                        <i class="fa-regular fa-comment"></i>
+                        <p class="">Reply</p>
+                    </div>
+                </div>
             </div>
         `;
+    };
+
+    protected addEventListener(): void {
+        this.eventShowImages();
+    }
+
+    private eventShowImages() {
+        this.signEventAll('img.comment-image', 'click', (e) => {
+            e.target;
+
+            const image = (e.target as HTMLImageElement).src;
+
+            ImageCommentReduce.setCurIamge(image);
+
+            signal.emit('open-image-modal');
+        });
+    }
+}
+
+class ImageSkeleton extends QBComponent<{ fileLoadding: number }> {
+    protected markup: () => string = () => {
+        let html = '';
+        for (let index = 0; index < this.props.fileLoadding; index++) {
+            html += /*html*/ `
+            <div class="w-[160px] h-[160px]  rounded-xl border border-gray-200 flex items-center justify-center bg-gray-100">
+                                        <i class="fa-solid fa-spinner animate-spin"></i>
+                                        ${index + 1}/${this.props.fileLoadding}
+                                        </div>
+            `;
+        }
+        return /*html*/ `${html}
+                        `;
     };
 }
 class TabComments extends QBComponent<{}, TabCommentsState> {
@@ -103,6 +173,10 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
         this.state = {
             lsComment: [],
             lsImageCmt: [],
+            fileLoadding: 0,
+            files: [],
+            rate: 5,
+            cmtInput: '',
         };
     }
     markup = () => {
@@ -115,13 +189,13 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                 ? /*html*/ `
             <div class="pt-5">
             <p class="text-gray-600 font-semibold pb-3">Write your comment</p>
-            <div class="border border-gray-200 py-2 px-5 rounded">
+            <div class="border border-gray-200 pt-2 pb-4 px-5 rounded">
                 <div class="flex items-center gap-3">
                     ${
-                        userReducer.getData?.avatar
-                            ? `<img class="w-[40px] h-[40px] object-cover rounded-full border border-gray-200"
-                        src="${userReducer.getData.avatar}" alt="">`
-                            : `<div class="w-[40px] h-[40px] object-cover rounded-full bg-gray-200 flex items-center justify-center text-xl">${userReducer.getData?.username.charAt(
+                        userReducer.getData?.image
+                            ? `<img class="size-[48px] object-cover rounded-full border border-gray-200"
+                        src="${userReducer.getData.image}" alt="">`
+                            : `<div class="size-[48px] object-cover rounded-full bg-gray-200 flex items-center justify-center text-xl">${userReducer.getData?.username.charAt(
                                   1
                               )}</div>`
                     }
@@ -129,12 +203,17 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                         <div class="flex items-center gap-2">
                             <p class="text-gray-700 font-semibold">${userReducer.getData?.username}</p>
                         </div>
-                        <select class="py-0 mt-1 border border-gray-200 rounded" name="rate" id="rating-intput">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5" selected>5</option>
+                        ${new Star(this.state.rate).html}
+                        <select class="py-0 mt-1 border border-gray-200 rounded focus:ring-1 focus:ring-gray-300 outline-none" name="rate" id="rating-intput" >
+                            <option value="1" ${this.state.rate === 1 ? 'selected' : ''}>1</option>
+                            <option value="1.5" ${this.state.rate === 1.5 ? 'selected' : ''}>1.5</option>
+                            <option value="2" ${this.state.rate === 2 ? 'selected' : ''}>2</option>
+                            <option value="2.5" ${this.state.rate === 2.5 ? 'selected' : ''}>2.5</option>
+                            <option value="3" ${this.state.rate === 3 ? 'selected' : ''}>3</option>
+                            <option value="3.5" ${this.state.rate === 3.5 ? 'selected' : ''}>3.5</option>
+                            <option value="4" ${this.state.rate === 4 ? 'selected' : ''}>4</option>
+                            <option value="4.5" ${this.state.rate === 4.5 ? 'selected' : ''}>4.5</option>
+                            <option value="5" ${this.state.rate === 5 ? 'selected' : ''}>5</option>
                         </select>
                     </div>
                 </div>
@@ -156,6 +235,16 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                                         `;
                                     })
                                     .join('')}
+                                    ${new ImageSkeleton({ fileLoadding: this.state.fileLoadding }).html}
+                            </div>
+                            </div>
+                        `
+                        : this.state.fileLoadding > 0
+                        ? /*html*/ `
+                        <p class="text-gray-400 text-sm">Uploading ${this.state.fileLoadding}</p>
+                        <div class="flex items-center gap-3 pt-3  w-full">
+                            <div class="flex items-center gap-3 flex-wrap w-full">
+                            ${new ImageSkeleton({ fileLoadding: this.state.fileLoadding }).html}
                             </div>
                             </div>
                         `
@@ -163,8 +252,10 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                 }
                 
                 <div class="flex items-center gap-3 pt-3">
-                    <input type="text" name="" id="comment-input" class="flex-1 border border-gray-200 rounded" placeholder="Type your comment" /> 
-                    <input type="file" multiple class="hidden" id="image-input"/>
+                    <input type="text" name="" id="comment-input" class="flex-1 border border-gray-200 rounded  focus:ring-1 focus:ring-gray-300" placeholder="Type your comment" value="${
+                        this.state.cmtInput
+                    }" /> 
+                    <input type="file" multiple class="hidden" id="image-input" enctype="multipart/form-data"/>
                     <i class="fa-solid fa-image text-blue-900" id="btn-add-image"></i>
                     <i class="fa-solid fa-paper-plane text-blue-900" id="btn-comment"></i>
                 </div>
@@ -190,6 +281,17 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
     protected addEventListener(): void {
         this.signEvent('#btn-comment', 'click', this.comment);
         this.eventAddImage();
+        this.signEvent('#rating-intput', 'change', () => {
+            this.setState({ rate: Number((document.querySelector('#rating-intput') as HTMLInputElement).value) });
+        });
+
+        this.signEvent('#comment-input', 'keyup', (e: any) => {
+            if (e.key === 'Enter') {
+                this.comment();
+            } else {
+                this.state.cmtInput = (e.target as HTMLInputElement).value;
+            }
+        });
     }
 
     private eventAddImage() {
@@ -197,9 +299,11 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
             this.node('#image-input')?.click();
         });
 
+        //up files
         this.signEvent('#image-input', 'change', async (e) => {
             const files = (e.target as HTMLInputElement).files;
             if (!files) return;
+
             const lsImages = [] as string[];
             const readFileAsDataURL = (file: File): Promise<string> => {
                 return new Promise((resolve, reject) => {
@@ -209,8 +313,10 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                     reader.onerror = (error) => reject(error);
                 });
             };
+            this.setState({ fileLoadding: files.length });
 
             for (let file of files) {
+                this.state.files?.push(file);
                 try {
                     const image = await readFileAsDataURL(file);
                     lsImages.push(image);
@@ -218,7 +324,8 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                     console.error('Error reading file:', error);
                 }
             }
-            this.setState({ lsImageCmt: [...this.state.lsImageCmt, ...lsImages] });
+
+            this.setState({ lsImageCmt: [...this.state.lsImageCmt, ...lsImages], fileLoadding: 0 });
         });
 
         // delete image
@@ -227,42 +334,61 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
             const id = btn.id;
 
             const index = Number(id.replace('btn-delete-image-', ''));
-            console.log(index);
+
+            this.state.files = this.state.files?.filter((item, i) => {
+                item;
+                return i != index;
+            });
 
             this.setState({
-                lsImageCmt: this.state.lsImageCmt.filter((item, i) => i != index),
+                lsImageCmt: this.state.lsImageCmt.filter((item, i) => {
+                    item;
+                    return i != index;
+                }),
             });
         });
     }
 
     // api
 
-    protected async affterRender(): Promise<void> {
-        const result = await commentService.getCmtByProductId(QBRouter.param.id);
-        this.setState({ lsComment: result });
+    protected async afterRender(): Promise<void> {
+        await this.setComment();
     }
 
+    private async setComment() {
+        const result = await commentService.getCmtByProductId(QBRouter.params.id);
+        const lsImageCmts: (string | undefined)[] = (result as IProductComment[]).map((item) => item.images).flat();
+        ImageCommentReduce.setImageList(lsImageCmts as string[]);
+        this.setState({ lsComment: result });
+        if (result) {
+            signal.emit('comment-change', result);
+        }
+    }
     //support
     private comment = async () => {
         const userComment = {
-            productId: QBRouter.param.id,
+            productId: QBRouter.params.id,
             userId: userReducer.getData?.userId,
             rating: (this.node('#rating-intput') as HTMLSelectElement)?.value,
             comment: (this.node('#comment-input') as HTMLInputElement)?.value,
+            lsFileImages: this.state.files,
         };
 
         if (userComment.comment == '') {
-            toast.error('Vui lòng nhập bình luận');
+            toast.error('Please enter your comment');
             return;
         }
         try {
+            // add comment
             await commentService.addComment(userComment);
-            const result = await commentService.getCmtByProductId(QBRouter.param.id);
-            this.setState({ lsComment: result });
-            toast.success('Thêm bình luận thành công');
+            const result = await commentService.getCmtByProductId(QBRouter.params.id);
+            this.setState({ lsComment: result, lsImageCmt: [], fileLoadding: 0, files: [], cmtInput: '', rate: 5 });
+            signal.emit('comment-change', result);
+            toast.success('Add comment success');
+            this.state.fileLoadding = 0;
+            this.state.files = [];
         } catch (error) {
-            console.log(error);
-            toast.error('Thêm bình luận thất bại');
+            toast.error('Add comment failed');
         }
     };
 }

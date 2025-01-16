@@ -1,17 +1,17 @@
-import QBComponent from '../../lib/QBComponent';
-import QBRouter from '../../lib/QBRouter';
+// import QBComponent from '../../lib/QBComponent';
+// import QBRouter from '../../lib/QBRouter';
 
-class BlogPage extends QBComponent {
-    markup = () => {
-        return /*html*/ ``;
-    };
+// class BlogPage extends QBComponent {
+//     markup = () => {
+//         return /*html*/ ``;
+//     };
 
-    protected renderUI(): void {
-        super.renderUI();
-    }
+//     protected renderUI(): void {
+//         super.renderUI();
+//     }
 
-    protected async affterRender(): Promise<void> {
-        const blog = QBRouter.param.blog;
-        const post = fetch(`https://jsonplaceholder.typicode.com/posts/${blog}`);
-    }
-}
+//     protected async afterRender(): Promise<void> {
+//         const blog = QBRouter.params.blog;
+//         const post = fetch(`https://jsonplaceholder.typicode.com/posts/${blog}`);
+//     }
+// }

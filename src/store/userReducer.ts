@@ -1,7 +1,6 @@
 import authenService from '../api/authenService';
-import cartService from '../api/cartService';
 import { IUser } from '../interface/user';
-import Listener from '../lib/listener';
+import signal from '../lib/listener';
 import QBRouter from '../lib/QBRouter';
 import { decodeTokenPayload } from '../util/token';
 import cartReducer from './cartReducer';
@@ -23,9 +22,14 @@ class userReducer {
         return this.data;
     }
 
-    setUser(data: IUser | null) {
-        this.data = data;
-        Listener.emit('user-change');
+    setUser(data: IUser | Partial<IUser> | null) {
+        if (!data) {
+            this.data = null;
+        } else {
+            this.data = { ...this.data, ...data } as IUser;
+        }
+
+        signal.emit('user-change');
     }
 
     async verify() {
@@ -87,8 +91,21 @@ class userReducer {
         return false;
     }
 
+    async refreshToken() {
+        const accessToken = localStorage.getItem('accessToken');
+        const result = await authenService.refreshToken(JSON.parse(accessToken!)!);
+
+        if (result) {
+            localStorage.setItem('accessToken', JSON.stringify(result.accessToken));
+            localStorage.setItem('refreshToken', JSON.stringify(result.refreshToken));
+            this.setUser(decodeTokenPayload(result.accessToken) as IUser);
+        }
+    }
+
     logout() {
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('cart');
         //sync cart on server
         cartReducer.synCartOnServer();
         QBRouter.nav('/');

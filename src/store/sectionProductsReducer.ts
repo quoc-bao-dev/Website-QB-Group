@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { productService } from '../api/productService';
 import { PaginationResult, Product } from '../interface/product';
 import categoryReducer from './categoryReducer';
-import Listener from '../lib/listener';
+import signal from '../lib/listener';
 
 class SectionProudctReducer {
     data: { [key: string]: PaginationResult<Product> } = {};
@@ -20,9 +20,7 @@ class SectionProudctReducer {
                 })
             );
             this.data = _.zipObject(lsKeys, result);
-        } catch (error) {
-            console.log(error);
-        }
+        } catch (error) {}
     }
 
     async addProductToSection(category: string, page: number) {
@@ -30,7 +28,7 @@ class SectionProudctReducer {
         const result = await productService.getProductOfCategory(cateID, page);
         this.data[category].products.push(...result.products);
         this.data[category].page = result.page;
-        Listener.emit('product-of-section-change');
+        signal.emit('product-of-section-change');
     }
 }
 

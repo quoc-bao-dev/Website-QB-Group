@@ -31,12 +31,68 @@ export interface Product {
     isShow: boolean;
     orderNumber: number;
     isNewItem: boolean;
+    rating: number;
+    isLoved: boolean;
+    option?: OptionProduct;
+    view: number;
+    sold: number;
+}
+
+interface Feature {
+    featureName: string;
+    featureDescription: string;
+}
+
+interface Specification {
+    specKey: string;
+    specValue: string;
+}
+
+export interface IOptionItem {
+    value: string;
+    priceInc: number;
+    stock: number;
+    isDefault: boolean;
+    color?: string;
+}
+
+export interface Option {
+    color: IOptionItem[];
+    ram: IOptionItem[];
+    storage: IOptionItem[];
+}
+
+export interface OptionProduct {
+    color: IOptionItem;
+    ram: IOptionItem;
+    storage: IOptionItem;
+}
+
+interface ShippingDetails {
+    weight: string;
+    dimensions: string;
+    shippingFee: number;
+}
+
+export interface ImagesProdDetail {
+    url: string;
+    isPrimary: boolean;
 }
 
 export interface ProductDetail extends Omit<Product, 'category' | 'brand'> {
-    description: string;
     brand: BrandDetail;
     category: CategoryDetail;
+
+    productId: string;
+    description: string;
+    features: Feature[];
+    specifications: Specification[];
+    options: Option;
+    rating: number;
+    promotions: any[]; // Assuming promotions can be of any type as it is an empty array in the given JSON
+    shippingDetails: ShippingDetails;
+    _id: string;
+    images: ImagesProdDetail[];
 }
 
 export interface ProductInCart extends Omit<Product, 'category' | 'brand'> {

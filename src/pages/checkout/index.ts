@@ -5,7 +5,7 @@ import AppLoading from '../../components/common/AppLoading';
 import { EmailData } from '../../interface/mail';
 import { OrderInput } from '../../interface/order';
 import FormContext from '../../lib/FormContext';
-import Listener from '../../lib/listener';
+import signal from '../../lib/listener';
 import QBComponent from '../../lib/QBComponent';
 import QBRouter from '../../lib/QBRouter';
 import cartReducer from '../../store/cartReducer';
@@ -18,16 +18,15 @@ import CheckoutInfo from './partials/CheckoutInfo';
 
 class CheckOutPage extends QBComponent {
     constructor() {
-        super(null);
-        this.pathTemplate = '/src/pages/checkout/index.html';
-        Listener.on(
+        super();
+        signal.on(
             'page-change',
             () => {
                 // checkoutReducer.clear();
             },
             'reset-checkout'
         );
-        Listener.on(
+        signal.on(
             'payment-handler',
             () => {
                 this.checkout();
@@ -35,6 +34,33 @@ class CheckOutPage extends QBComponent {
             'payment-handler'
         );
     }
+
+    protected markup: () => string = () => {
+        return /*html*/ `
+        <!-- main -->
+<main>
+    <section class="section">
+        <div class="container">
+            <div class="grid grid-cols-12 gap-5">
+                <div class="col-span-7">
+                    <!-- checkout address -->
+                    <div class="contents" id="checkout-address"></div>
+
+                </div>
+                <div class="col-span-5">
+                    <div class="contents" id="checkout-info"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<div id="app-overlay">
+
+</div>
+
+<!-- main -->
+        `;
+    };
 
     //UI
     protected renderUI(): void {
@@ -78,8 +104,24 @@ class CheckOutPage extends QBComponent {
     }
     // event
 
+    // before render
+    protected async beforeRender(): Promise<void> {
+        const verify = await userReducer.verify();
+        if (!verify) {
+            this.rejectRender();
+            QBRouter.nav('/login');
+        }
+
+        const cartItems = cartReducer.getData.length;
+        if (!cartItems) {
+            toast.error('Cart is empty');
+            this.rejectRender();
+            QBRouter.nav('/');
+        }
+    }
+
     // affter render
-    protected async affterRender(): Promise<void> {
+    protected async afterRender(): Promise<void> {
         /// co hoa don dang thanh toan
         if (checkoutReducer.getAppTransId != '') {
             await this.checkout.bind(this)();
@@ -115,6 +157,7 @@ class CheckOutPage extends QBComponent {
                 totalAmount: cartReducer.getFinalTotal,
                 subTotal: cartReducer.getSubtotalChecked,
                 discountPercentage: cartReducer.getDiscountPercent,
+                voucher: checkoutReducer.getVoucher,
             };
 
             /// zalopay
@@ -122,8 +165,12 @@ class CheckOutPage extends QBComponent {
                 const result = await paymentService.paymentZalopayStatus(checkoutReducer.getAppTransId);
                 if (result) {
                     /// payment success
+
                     if (result.return_code == 1) {
-                        await orderService.addOrder(inputOrder);
+                        await orderService.addOrder({
+                            ...inputOrder,
+                            paymentStatus: 'success',
+                        });
                         this.renderPaymentSuccess();
                         toast.success('Checkout success');
                         checkoutReducer.clear();
@@ -158,7 +205,6 @@ class CheckOutPage extends QBComponent {
 
             /// payment method not support
         } catch (error) {
-            console.log(error);
             toast.error('Checkout failed');
         } finally {
             setTimeout(() => {

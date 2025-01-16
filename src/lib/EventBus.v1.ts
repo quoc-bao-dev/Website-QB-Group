@@ -27,7 +27,6 @@ export class EventBus {
         } else {
             const index = this.listeners[event].findIndex((listener) => listener.key === key);
             if (index > -1) {
-                console.warn('Exist event!');
                 this.listeners[event][index].fn = callback;
             } else {
                 this.listeners[event].push({

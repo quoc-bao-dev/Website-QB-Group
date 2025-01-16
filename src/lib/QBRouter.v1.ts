@@ -1,4 +1,4 @@
-import Listener from './listener';
+import signal from './listener';
 import { Route } from './QBRouter';
 
 class QBRouter {
@@ -19,11 +19,11 @@ class QBRouter {
         this.querryUrl = query;
     }
 
-    get param() {
+    get params() {
         return this.paramUrl;
     }
 
-    get querry() {
+    get querries() {
         return this.querryUrl;
     }
 
@@ -59,11 +59,11 @@ class QBRouter {
             componentInstance.render(this.rootElement, { params, queryParams });
             this.setParam(params);
             this.setQuerry(queryParams);
-            Listener.emit('page-change');
+            signal.emit('page-change');
         } else {
             console.error('Root element not found');
         }
-        Listener.emit('page-change');
+        signal.emit('page-change');
     }
 
     listen() {

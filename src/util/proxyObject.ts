@@ -47,6 +47,8 @@ const proxy = {
             deliveryAddress: deliveryAddress,
             orderItems: orderItems,
             tax: input.tax,
+            paymentStatus: input.paymentStatus,
+            voucher: input.voucher,
         };
 
         return output;

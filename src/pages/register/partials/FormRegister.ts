@@ -183,7 +183,6 @@ class FormRegister extends QBForm {
     // support
     private async submitForm() {
         const formData = await this.getDataForm();
-        // console.log(formData);
         if (formData) {
             try {
                 const result = await authenService.register(formData);

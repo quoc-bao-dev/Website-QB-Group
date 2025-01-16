@@ -69,7 +69,7 @@ class CartInfoItem extends QBComponent<ICartItem> {
 class CartPageInfo extends QBComponent {
     protected markup: () => string = () => {
         return /*html*/ `
-       <div class="col-span-4">
+       <div class="col-span-4 bg-white">
                 <div class="p-4 border border-gray-200 rounded">
                     <div class="flex items-center border-2 border-blue-900 rounded">
                         <input

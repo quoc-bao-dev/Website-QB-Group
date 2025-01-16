@@ -1,4 +1,4 @@
-import Listener from '../../../lib/listener';
+import signal from '../../../lib/listener';
 import QBComponent from '../../../lib/QBComponent';
 import QBForm from '../../../lib/QBForm';
 import checkoutReducer from '../../../store/checkoutReducer';
@@ -8,14 +8,14 @@ class AddressForm extends QBForm {
         super();
         this.formContextKey = 'checkout-address';
 
-        Listener.on(
+        signal.on(
             'load-checkout',
             () => {
                 this.setLoadForm();
             },
             'checkout-address'
         );
-        Listener.on(
+        signal.on(
             'set-address',
             () => {
                 this.setLoadForm();
@@ -200,7 +200,7 @@ class AddressForm extends QBForm {
 class CheckoutAddress extends QBComponent {
     constructor() {
         super(null);
-        Listener.on(
+        signal.on(
             'set-list-user-add',
             () => {
                 this.reRender();
@@ -211,7 +211,7 @@ class CheckoutAddress extends QBComponent {
     protected markup: () => string = () => {
         return /*html*/ `
         <div class="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md">
-                        <h2 class="text-2xl font-bold text-gray-700 mb-6">Payment Information</h2>
+                        <h2 class="text-2xl font-bold text-gray-700 mb-6">Payment Address</h2>
                         <div class="contents" id="address-form"></div>
                         ${
                             checkoutReducer.getLsUserAddress.length > 0
