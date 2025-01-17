@@ -1,6 +1,7 @@
 import signal from '../../../../lib/listener';
 import QBComponent from '../../../../lib/QBComponent';
 import userReducer from '../../../../store/userReducer';
+import { toImage } from '../../../../util/image';
 
 class HeaderUserBtn extends QBComponent {
     constructor() {
@@ -27,7 +28,9 @@ class HeaderUserBtn extends QBComponent {
                        <div class="flex items-center cursor-pointer" id="user-icon">
                         ${
                             userReducer.data?.image
-                                ? `<img src="${userReducer.data?.image}" alt="Profile Picture" class="size-[48px] rounded-full object-cover">`
+                                ? `<img src="${toImage(
+                                      userReducer.data?.image
+                                  )}" alt="Profile Picture" class="size-[48px] rounded-full object-cover">`
                                 : userReducer.getData?.username
                                 ? `<div class="size-[48px] rounded-full mx-auto bg-gray-300 flex items-center justify-center">${userReducer.data?.username
                                       .charAt(0)
@@ -47,14 +50,22 @@ class HeaderUserBtn extends QBComponent {
                                     <div class="px-4 py-3 text-center border-b">
                                     ${
                                         userReducer.data?.image
-                                            ? `<img src="${userReducer.data?.image}" alt="Profile Picture"
+                                            ? `<img src="${toImage(
+                                                  userReducer.data?.image
+                                              )}" alt="Profile Picture"
                                         class="w-16 h-16 rounded-full mx-auto object-cover">`
                                             : `<div class="class="w-16 h-16 rounded-full mx-auto bg-gray-300 flex items-center justify-center">
-                                            ${userReducer.data?.username.charAt(0).toUpperCase()}
+                                            ${userReducer.data?.username
+                                                .charAt(0)
+                                                .toUpperCase()}
                                             </div>`
                                     }
-                                    <p class="text-gray-900 text-lg font-bold">${userReducer.data?.username}</p>
-                                    <p class="text-gray-500 text-sm">${userReducer.data?.email}</p>
+                                    <p class="text-gray-900 text-lg font-bold">${
+                                        userReducer.data?.username
+                                    }</p>
+                                    <p class="text-gray-500 text-sm">${
+                                        userReducer.data?.email
+                                    }</p>
                                 </div>
                                     `
                                         : `

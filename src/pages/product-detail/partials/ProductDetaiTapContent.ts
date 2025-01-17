@@ -7,6 +7,7 @@ import QBRouter from '../../../lib/QBRouter';
 import ImageCommentReduce from '../../../store/ImageCommentReduce';
 import userReducer from '../../../store/userReducer';
 import { date } from '../../../util/date';
+import { toImage } from '../../../util/image';
 import toast from '../../../util/toast';
 import { IUser } from './../../../interface/user';
 
@@ -77,13 +78,16 @@ interface TabCommentsState {
 class CommentItem extends QBComponent<IProductComment> {
     protected markup: () => string = () => {
         return /*html*/ `
-        <div class="border border-gray-200 pt-2 pb-4 px-5 rounded" id="cmt-${this.props._id}">
+        <div class="border border-gray-200 pt-2 pb-4 px-5 rounded" id="cmt-${
+            this.props._id
+        }">
                 <div class="flex items-center gap-3">
                     ${
-                        typeof this.props.userId === 'object' && this.props.userId.avatar
+                        typeof this.props.userId === 'object' &&
+                        this.props.userId.avatar
                             ? /*html*/ `
                         <img class="w-[40px] h-[40px] object-cover rounded-full border border-gray-200"
-                        src="${this.props.userId?.avatar}" alt="">
+                        src="${toImage(this.props.userId?.avatar)}" alt="">
                         `
                             : `<div class="w-[40px] h-[40px] flex items-center justify-center bg-gray-200 text-xl rounded-full">${this.props.userId.fullName.slice(
                                   0,
@@ -92,10 +96,16 @@ class CommentItem extends QBComponent<IProductComment> {
                     }
                     <div class="">
                         <div class="flex items-center gap-2">
-                            <p class="text-gray-700 font-semibold">${this.props.userId?.fullName}</p>
-                            <p>(${this.props.rating} <i class="fa-solid fa-star text-yellow-400"></i>)</p>
+                            <p class="text-gray-700 font-semibold">${
+                                this.props.userId?.fullName
+                            }</p>
+                            <p>(${
+                                this.props.rating
+                            } <i class="fa-solid fa-star text-yellow-400"></i>)</p>
                         </div>
-                        <p class="text-gray-400">${date(this.props.createdAt)}</p>
+                        <p class="text-gray-400">${date(
+                            this.props.createdAt
+                        )}</p>
                     </div>
                 </div>
                 <div class="h-[1px] w-full bg-gray-200 my-2"></div>
@@ -106,7 +116,9 @@ class CommentItem extends QBComponent<IProductComment> {
                         ${this.props.images
                             ?.map((image) => {
                                 return /*html*/ `
-                            <img class="w-full h-full object-cover comment-image" src="${image}" alt="">
+                            <img class="w-full h-full object-cover comment-image" src="${toImage(
+                                image
+                            )}" alt="">
                             `;
                             })
                             .join('')}
@@ -201,19 +213,39 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                     }
                     <div class="">
                         <div class="flex items-center gap-2">
-                            <p class="text-gray-700 font-semibold">${userReducer.getData?.username}</p>
+                            <p class="text-gray-700 font-semibold">${
+                                userReducer.getData?.username
+                            }</p>
                         </div>
                         ${new Star(this.state.rate).html}
                         <select class="py-0 mt-1 border border-gray-200 rounded focus:ring-1 focus:ring-gray-300 outline-none" name="rate" id="rating-intput" >
-                            <option value="1" ${this.state.rate === 1 ? 'selected' : ''}>1</option>
-                            <option value="1.5" ${this.state.rate === 1.5 ? 'selected' : ''}>1.5</option>
-                            <option value="2" ${this.state.rate === 2 ? 'selected' : ''}>2</option>
-                            <option value="2.5" ${this.state.rate === 2.5 ? 'selected' : ''}>2.5</option>
-                            <option value="3" ${this.state.rate === 3 ? 'selected' : ''}>3</option>
-                            <option value="3.5" ${this.state.rate === 3.5 ? 'selected' : ''}>3.5</option>
-                            <option value="4" ${this.state.rate === 4 ? 'selected' : ''}>4</option>
-                            <option value="4.5" ${this.state.rate === 4.5 ? 'selected' : ''}>4.5</option>
-                            <option value="5" ${this.state.rate === 5 ? 'selected' : ''}>5</option>
+                            <option value="1" ${
+                                this.state.rate === 1 ? 'selected' : ''
+                            }>1</option>
+                            <option value="1.5" ${
+                                this.state.rate === 1.5 ? 'selected' : ''
+                            }>1.5</option>
+                            <option value="2" ${
+                                this.state.rate === 2 ? 'selected' : ''
+                            }>2</option>
+                            <option value="2.5" ${
+                                this.state.rate === 2.5 ? 'selected' : ''
+                            }>2.5</option>
+                            <option value="3" ${
+                                this.state.rate === 3 ? 'selected' : ''
+                            }>3</option>
+                            <option value="3.5" ${
+                                this.state.rate === 3.5 ? 'selected' : ''
+                            }>3.5</option>
+                            <option value="4" ${
+                                this.state.rate === 4 ? 'selected' : ''
+                            }>4</option>
+                            <option value="4.5" ${
+                                this.state.rate === 4.5 ? 'selected' : ''
+                            }>4.5</option>
+                            <option value="5" ${
+                                this.state.rate === 5 ? 'selected' : ''
+                            }>5</option>
                         </select>
                     </div>
                 </div>
@@ -235,16 +267,27 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                                         `;
                                     })
                                     .join('')}
-                                    ${new ImageSkeleton({ fileLoadding: this.state.fileLoadding }).html}
+                                    ${
+                                        new ImageSkeleton({
+                                            fileLoadding:
+                                                this.state.fileLoadding,
+                                        }).html
+                                    }
                             </div>
                             </div>
                         `
                         : this.state.fileLoadding > 0
                         ? /*html*/ `
-                        <p class="text-gray-400 text-sm">Uploading ${this.state.fileLoadding}</p>
+                        <p class="text-gray-400 text-sm">Uploading ${
+                            this.state.fileLoadding
+                        }</p>
                         <div class="flex items-center gap-3 pt-3  w-full">
                             <div class="flex items-center gap-3 flex-wrap w-full">
-                            ${new ImageSkeleton({ fileLoadding: this.state.fileLoadding }).html}
+                            ${
+                                new ImageSkeleton({
+                                    fileLoadding: this.state.fileLoadding,
+                                }).html
+                            }
                             </div>
                             </div>
                         `
@@ -282,7 +325,15 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
         this.signEvent('#btn-comment', 'click', this.comment);
         this.eventAddImage();
         this.signEvent('#rating-intput', 'change', () => {
-            this.setState({ rate: Number((document.querySelector('#rating-intput') as HTMLInputElement).value) });
+            this.setState({
+                rate: Number(
+                    (
+                        document.querySelector(
+                            '#rating-intput'
+                        ) as HTMLInputElement
+                    ).value
+                ),
+            });
         });
 
         this.signEvent('#comment-input', 'keyup', (e: any) => {
@@ -325,12 +376,17 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                 }
             }
 
-            this.setState({ lsImageCmt: [...this.state.lsImageCmt, ...lsImages], fileLoadding: 0 });
+            this.setState({
+                lsImageCmt: [...this.state.lsImageCmt, ...lsImages],
+                fileLoadding: 0,
+            });
         });
 
         // delete image
         this.signEventAll('[id^=btn-delete-image]', 'click', (e) => {
-            const btn = (e.target as HTMLElement).closest('[id^=btn-delete-image]') as HTMLElement;
+            const btn = (e.target as HTMLElement).closest(
+                '[id^=btn-delete-image]'
+            ) as HTMLElement;
             const id = btn.id;
 
             const index = Number(id.replace('btn-delete-image-', ''));
@@ -356,8 +412,14 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
     }
 
     private async setComment() {
-        const result = await commentService.getCmtByProductId(QBRouter.params.id);
-        const lsImageCmts: (string | undefined)[] = (result as IProductComment[]).map((item) => item.images).flat();
+        const result = await commentService.getCmtByProductId(
+            QBRouter.params.id
+        );
+        const lsImageCmts: (string | undefined)[] = (
+            result as IProductComment[]
+        )
+            .map((item) => item.images)
+            .flat();
         ImageCommentReduce.setImageList(lsImageCmts as string[]);
         this.setState({ lsComment: result });
         if (result) {
@@ -381,8 +443,17 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
         try {
             // add comment
             await commentService.addComment(userComment);
-            const result = await commentService.getCmtByProductId(QBRouter.params.id);
-            this.setState({ lsComment: result, lsImageCmt: [], fileLoadding: 0, files: [], cmtInput: '', rate: 5 });
+            const result = await commentService.getCmtByProductId(
+                QBRouter.params.id
+            );
+            this.setState({
+                lsComment: result,
+                lsImageCmt: [],
+                fileLoadding: 0,
+                files: [],
+                cmtInput: '',
+                rate: 5,
+            });
             signal.emit('comment-change', result);
             toast.success('Add comment success');
             this.state.fileLoadding = 0;
@@ -398,12 +469,16 @@ class ProductDetaiWrap extends QBComponent<{ choose?: chooseTab }> {
         <div class="pt-5">
                         <div class="flex gap-2">
                             <div class="tab-comment py-2 px-3 text-blue-900  border-b-2 ${
-                                this.props.choose == 'comment' ? 'border-blue-900' : 'border-gray-200'
+                                this.props.choose == 'comment'
+                                    ? 'border-blue-900'
+                                    : 'border-gray-200'
                             } hover:bg-gray-200">
                                 Comment
                             </div>
                             <div class="tab-detail py-2 px-3 text-blue-900  border-b-2 ${
-                                this.props.choose == 'detail' ? 'border-blue-900' : 'border-gray-200'
+                                this.props.choose == 'detail'
+                                    ? 'border-blue-900'
+                                    : 'border-gray-200'
                             } hover:bg-gray-200">
                                 Detail
                             </div>

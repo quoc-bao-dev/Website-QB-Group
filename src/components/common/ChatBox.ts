@@ -6,6 +6,7 @@ import QBComponent from '../../lib/QBComponent';
 import chatReducer from '../../store/chatReducer';
 import userReducer from '../../store/userReducer';
 import { BASE_URL_SOCKET } from '../../config/config';
+import { toImage } from '../../util/image';
 
 interface MessageItemProps {
     message: Message;
@@ -23,7 +24,9 @@ class MessageItem extends QBComponent<MessageItemProps> {
                 ${
                     this.props.message.senderId.avatar
                         ? /*html*/ `
-                    <img class="w-10 h-10 rounded-full object-cover" src="${this.props.message.senderId.avatar}" alt="">
+                    <img class="w-10 h-10 rounded-full object-cover" src="${toImage(
+                        this.props.message.senderId.avatar
+                    )}" alt="">
                     `
                         : /*html*/ `
                     <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white mr-2">
@@ -42,7 +45,9 @@ class MessageItem extends QBComponent<MessageItemProps> {
                 ${
                     this.props.message.senderId.avatar
                         ? /*html*/ `
-                    <img class="w-10 h-10 rounded-full object-cover" src="${this.props.message.senderId.avatar}" alt="">
+                    <img class="w-10 h-10 rounded-full object-cover" src="${toImage(
+                        this.props.message.senderId.avatar
+                    )}" alt="">
                     `
                         : /*html*/ `
                     <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white mr-2">
@@ -100,7 +105,9 @@ class ChatBox extends QBComponent<ChatBoxProps, ChatBoxState> {
         <div class="p-4 border-b border-gray-300">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <img src="${roomInfo?.avatar}" class="w-10 h-10 rounded-full" alt="">
+                    <img src="${toImage(
+                        roomInfo?.avatar
+                    )}" class="w-10 h-10 rounded-full" alt="">
                     <div class="text-base font-semibold">
                         <h2 class="text-gray-800">${roomInfo?.fullName}</h2>
                         <div class="flex gap-1 items-center">
@@ -143,12 +150,17 @@ class ChatBox extends QBComponent<ChatBoxProps, ChatBoxState> {
         }
 
         setTimeout(() => {
-            const wrapper = document.querySelector('.chat-wrrapper') as HTMLDivElement;
+            const wrapper = document.querySelector(
+                '.chat-wrrapper'
+            ) as HTMLDivElement;
 
-            const chatBox = document.querySelector('#list-message') as HTMLDivElement;
+            const chatBox = document.querySelector(
+                '#list-message'
+            ) as HTMLDivElement;
 
             if (chatBox && wrapper) {
-                const scrollToPosition = chatBox.offsetTop + chatBox.scrollHeight * 200;
+                const scrollToPosition =
+                    chatBox.offsetTop + chatBox.scrollHeight * 200;
                 wrapper.scrollTo({
                     top: scrollToPosition,
                 });
@@ -216,7 +228,10 @@ class ChatBox extends QBComponent<ChatBoxProps, ChatBoxState> {
     }
 
     private updateMessage(data: any) {
-        this.setState({ lsMessage: [...this.state.lsMessage, data], isShow: true });
+        this.setState({
+            lsMessage: [...this.state.lsMessage, data],
+            isShow: true,
+        });
     }
 }
 

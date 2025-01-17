@@ -5,6 +5,7 @@ import signal from '../../../../lib/listener';
 import QBComponent from '../../../../lib/QBComponent';
 import QBRouter from '../../../../lib/QBRouter';
 import userReducer from '../../../../store/userReducer';
+import { toImage } from '../../../../util/image';
 import toast from '../../../../util/toast';
 import UserDetail from './Admin.User.UserDetail';
 
@@ -20,7 +21,7 @@ class UserAdminItem extends QBComponent<IUser> {
        <td class="p-2 text-center">
        ${
            this.props.avatar
-               ? `<img src="${this.props.avatar}"
+               ? `<img src="${toImage(this.props.avatar)}"
                     class="w-10 aspect-[1/1] object-cover rounded-full border border-gray-300" alt="">`
                : `<img src="https://ui-avatars.com/api/?name=${this.props.fullName}&size=200"
                     class="w-10 aspect-[1/1] object-cover rounded-full " alt="">`
@@ -30,15 +31,23 @@ class UserAdminItem extends QBComponent<IUser> {
             <td class="p-2 text-center">${this.props.username}</td>
             <td class="p-2 text-center">${this.props.email}</td>
             <td class="p-2 text-center">${this.props.fullName}</td>
-            <td class="p-2 text-center">${this.props.phoneNumber ?? `<p class="text-gray-500">none</p>`}</td>
+            <td class="p-2 text-center">${
+                this.props.phoneNumber ?? `<p class="text-gray-500">none</p>`
+            }</td>
             <td class="p-2 text-center">
                 <label class="inline-flex items-center cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-200 " ${
-                    this.props._id === userReducer.getData?.userId ? 'disabled' : ''
+                    this.props._id === userReducer.getData?.userId
+                        ? 'disabled'
+                        : ''
                 }>
                     <input type="checkbox" value="" class="sr-only peer btn-active" ${
                         this.props.isActive ? 'checked' : ''
                     }
-                    ${this.props._id === userReducer.getData?.userId ? 'disabled' : ''}
+                    ${
+                        this.props._id === userReducer.getData?.userId
+                            ? 'disabled'
+                            : ''
+                    }
                     >
                     <div
                         class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 ${
@@ -132,7 +141,11 @@ class UserAdmin extends QBComponent<{}, UserAdminState> {
                     curPage: 'detail',
                     curUser: user,
                 });
-                window.history.replaceState({}, '', '/admin/?page=user&user_id=' + user._id);
+                window.history.replaceState(
+                    {},
+                    '',
+                    '/admin/?page=user&user_id=' + user._id
+                );
             },
             'show-info-user-admin'
         );
@@ -157,7 +170,10 @@ class UserAdmin extends QBComponent<{}, UserAdminState> {
         super.renderUI();
 
         if (this.state.curPage === 'detail') {
-            this.renderComponent('#page-content', new UserDetail(this.state.curUser!));
+            this.renderComponent(
+                '#page-content',
+                new UserDetail(this.state.curUser!)
+            );
             return;
         }
 
@@ -168,7 +184,10 @@ class UserAdmin extends QBComponent<{}, UserAdminState> {
 
     private renderTable = () => {
         // this.renderList<IUser>('#page-content', this.state.listUsser, UserAdminTable);
-        this.renderComponent('#page-content', new UserAdminTable(this.state.listUsser));
+        this.renderComponent(
+            '#page-content',
+            new UserAdminTable(this.state.listUsser)
+        );
     };
 
     protected async afterRender(): Promise<void> {
@@ -181,7 +200,9 @@ class UserAdmin extends QBComponent<{}, UserAdminState> {
     private showDettail() {
         const userId = QBRouter.querries.user_id;
         if (userId) {
-            const user = this.state.listUsser.find((item) => item._id === userId);
+            const user = this.state.listUsser.find(
+                (item) => item._id === userId
+            );
             if (user) {
                 this.setState({
                     curPage: 'detail',

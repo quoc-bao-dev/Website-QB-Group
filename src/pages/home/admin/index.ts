@@ -82,7 +82,9 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
                                 : `<img src="https://ui-avatars.com/api/?name=${userReducer.getData?.username}&size=200" class="h-full rounded-full overflow-hidden p-1 aspect-[1/1] object-cover" alt="">`
                         }
                         <div class="flex flex-col ">
-                            <h2 class="text-gray-900 ftex"> ${userReducer.getData?.fullName}</h2>
+                            <h2 class="text-gray-900 ftex"> ${
+                                userReducer.getData?.fullName
+                            }</h2>
                             <p class="text-xs text-gray-500">
                                 ${userReducer.getData?.email}
                             </p>
@@ -104,7 +106,9 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
                 <div class=" flex flex-col gap-3 pt-2">
                     <div
                     class="py-2 px-3 rounded-lg flex gap-5 items-center hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                        this.state.curPage === 'dashboard' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                        this.state.curPage === 'dashboard'
+                            ? 'bg-blue-200 text-blue-900'
+                            : 'text-gray-600'
                     }" data-page="dashboard">
                         <i class="fa-solid fa-chart-line"></i>
                         <p class="text-gray-600">Dashboard</p>
@@ -118,7 +122,9 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
                 <div class=" flex flex-col gap-3 pt-2">
                     <div
                     class="py-2 px-3 rounded-lg flex gap-5 items-center hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                        this.state.curPage === 'user' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                        this.state.curPage === 'user'
+                            ? 'bg-blue-200 text-blue-900'
+                            : 'text-gray-600'
                     }" data-page="user">
                         <i class="fa-solid fa-user"></i>
                         <p class="text-gray-600">User</p>
@@ -132,7 +138,9 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
                 <div class=" flex flex-col gap-3 pt-2">
                     <div
                         class="py-2 px-3 rounded-lg flex gap-5 items-center hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'product' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'product'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="product">
                         <i class="fa-solid fa-mobile-screen-button"></i>
                         <p class="text-gray-600">Product</p>
@@ -140,7 +148,9 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
 
                     <div
                         class="py-2 px-3 rounded-lg flex gap-5 items-center hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'category' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'category'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="category">
                         <i class="fa-solid fa-list"></i>
                         <p class="text-gray-600">Category</p>
@@ -148,7 +158,9 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
 
                     <div
                         class="py-2 px-3 rounded-lg flex gap-5 items-center hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'brand' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'brand'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="brand">
                         <i class="fa-brands fa-apple"></i>
                         <p class="text-gray-600">Brand</p>
@@ -156,7 +168,9 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
 
                     <div
                         class="py-2 px-3 rounded-lg flex gap-5 items-center hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'order' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'order'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="order">
                         <i class="fa-solid fa-file-invoice"></i>
                         <p class="text-gray-600">Order</p>
@@ -166,7 +180,9 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
 
                     <div
                         class="py-2 px-3 rounded-lg flex gap-5 items-center hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'voucher' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'voucher'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="voucher">
                         <i class="fa-solid fa-ticket"></i>
                         <p class="text-gray-600">Voucher</p>
@@ -273,7 +289,8 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
     private eventChangePage() {
         this.signEventAll('.side-bar-items', 'click', (e: Event) => {
             const btnClick = e.target as HTMLElement;
-            const page = (btnClick.closest('.side-bar-items') as HTMLElement).dataset.page;
+            const page = (btnClick.closest('.side-bar-items') as HTMLElement)
+                .dataset.page;
 
             if (page) {
                 this.setState({ curPage: page });
@@ -303,7 +320,16 @@ class AdminPage extends QBComponent<{}, AdminPageState> {
 
         if (
             page &&
-            ['dashboard', 'user', 'product', 'category', 'brand', 'order', 'promotion', 'voucher'].includes(page)
+            [
+                'dashboard',
+                'user',
+                'product',
+                'category',
+                'brand',
+                'order',
+                'promotion',
+                'voucher',
+            ].includes(page)
         ) {
             this.changePage(page);
         }

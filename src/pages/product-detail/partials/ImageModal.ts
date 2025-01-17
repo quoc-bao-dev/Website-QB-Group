@@ -1,11 +1,16 @@
 import signal from '../../../lib/listener';
 import QBComponent from '../../../lib/QBComponent';
 import ImageCommentReduce from '../../../store/ImageCommentReduce';
+import { toImage } from '../../../util/image';
 
 class ImageModal extends QBComponent {
     constructor() {
         super(null);
-        signal.on('open-image-modal', this.showModal.bind(this), 'open-image-modal');
+        signal.on(
+            'open-image-modal',
+            this.showModal.bind(this),
+            'open-image-modal'
+        );
         signal.on(
             'change-image',
             () => {
@@ -20,13 +25,17 @@ class ImageModal extends QBComponent {
             ImageCommentReduce.getIsShow ? 'show' : ''
         }" id="modal">
         <div class="flex flex-col gap-5">
-            <img class="max-h-[70vh] max-w-[90vw] object-contain" src="${ImageCommentReduce.getCurImage}" alt="">
+            <img class="max-h-[70vh] max-w-[90vw] object-contain" src="${
+                ImageCommentReduce.getCurImage
+            }" alt="">
         <div class="flex items-center justify-center">
             ${ImageCommentReduce.getListImage
                 .map((image, index) => {
                     return /*html*/ `<img class="max-w-[120px] max-h-[120px] object-contain cursor-pointer m-2 image-item ${
-                        index == ImageCommentReduce.curIndex ? 'border-2 border-blue-300' : ''
-                    }" src="${image}" alt="" />`;
+                        index == ImageCommentReduce.curIndex
+                            ? 'border-2 border-blue-300'
+                            : ''
+                    }" src="${toImage(image)}" alt="" />`;
                 })
                 .join('')}
         </div>

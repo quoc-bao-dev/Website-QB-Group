@@ -6,6 +6,7 @@ import signal from '../../lib/listener';
 import QBComponent from '../../lib/QBComponent';
 import chatReducer from '../../store/chatReducer';
 import userReducer from '../../store/userReducer';
+import { toImage } from '../../util/image';
 import ChatBox, { ChatBoxProps } from './ChatBox';
 
 interface ListChatBoxState {
@@ -13,7 +14,10 @@ interface ListChatBoxState {
     lsRoomOfUser: RoomChat[];
 }
 
-class ChatItem extends QBComponent<RoomChat, { isShow: boolean; user: IUser | null }> {
+class ChatItem extends QBComponent<
+    RoomChat,
+    { isShow: boolean; user: IUser | null }
+> {
     constructor(props: RoomChat) {
         super(props);
         this.state = {
@@ -50,7 +54,9 @@ class ChatItem extends QBComponent<RoomChat, { isShow: boolean; user: IUser | nu
             `;
         }
         return /*html*/ `
-        <img class="size-[48px] rounded-full object-cover avatar" src="${this.state.user?.avatar}" alt=""/>
+        <img class="size-[48px] rounded-full object-cover avatar" src="${toImage(
+            this.state.user?.avatar
+        )}" alt=""/>
         `;
     };
     protected addEventListener(): void {
@@ -61,9 +67,9 @@ class ChatItem extends QBComponent<RoomChat, { isShow: boolean; user: IUser | nu
     }
 
     protected async afterRender(): Promise<void> {
-        const idUser = this.props.participants.find((item) => (item as string) !== userReducer.getData?.userId) as
-            | string
-            | undefined;
+        const idUser = this.props.participants.find(
+            (item) => (item as string) !== userReducer.getData?.userId
+        ) as string | undefined;
 
         if (idUser) {
             const user = await userService.getUserById(idUser as string);
@@ -81,7 +87,11 @@ class ListChatBox extends QBComponent<{}, ListChatBoxState> {
             lsRoomOfUser: [],
         };
 
-        signal.on('list-chat-change', this.setListChat.bind(this), 'list-chat-change');
+        signal.on(
+            'list-chat-change',
+            this.setListChat.bind(this),
+            'list-chat-change'
+        );
     }
     protected markup: () => string = () => {
         return /*html*/ `
@@ -103,7 +113,9 @@ class ListChatBox extends QBComponent<{}, ListChatBoxState> {
     private renderListIcon() {
         const ls = this.state.lsRoomOfUser.map((item) => {
             const room = item.participants.find(
-                (participant) => (participant as Participant)._id !== userReducer.getData?.userId
+                (participant) =>
+                    (participant as Participant)._id !==
+                    userReducer.getData?.userId
             ) as Participant;
             return {
                 ...room,
@@ -115,7 +127,9 @@ class ListChatBox extends QBComponent<{}, ListChatBoxState> {
     }
 
     protected async afterRender(): Promise<void> {
-        const lsRoom = await chatService.getChatInfoByUserId(userReducer.getData?.userId as string);
+        const lsRoom = await chatService.getChatInfoByUserId(
+            userReducer.getData?.userId as string
+        );
 
         this.state.lsRoomOfUser = lsRoom;
         /// set list chat

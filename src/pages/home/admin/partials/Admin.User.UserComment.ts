@@ -1,13 +1,17 @@
 import commentService from '../../../../api/commentService';
 import QBComponent from '../../../../lib/QBComponent';
 import { date } from '../../../../util/date';
+import { toImage } from '../../../../util/image';
 import toast from '../../../../util/toast';
 import { IProductComment } from '../../../product-detail/partials/ProductDetaiTapContent';
 
 interface AdminUserCommentItemState {
     isShow: boolean;
 }
-class AdminUserCommentItem extends QBComponent<IProductComment, AdminUserCommentItemState> {
+class AdminUserCommentItem extends QBComponent<
+    IProductComment,
+    AdminUserCommentItemState
+> {
     constructor(props: IProductComment) {
         super(props);
         this.state = {
@@ -21,7 +25,7 @@ class AdminUserCommentItem extends QBComponent<IProductComment, AdminUserComment
                     <div class="bg-gray-300 size-12 rounded-full">
                     ${
                         this.props.userId.avatar
-                            ? `<img src="${this.props.userId.avatar}"
+                            ? `<img src="${toImage(this.props.userId.avatar)}"
                     class="w-full aspect-[1/1] object-cover rounded-full border border-gray-300" alt="">`
                             : `<img src="https://ui-avatars.com/api/?name=${this.props.userId.username}&size=200"
                     class="w-fullaspect-[1/1] object-cover rounded-full " alt="">`
@@ -36,7 +40,9 @@ class AdminUserCommentItem extends QBComponent<IProductComment, AdminUserComment
                         </div>
                     </div>
                     <div class="ml-auto flex items-center gap-3">
-                        <a href="/product-detail/${this.props.productId._id}?scroll=${
+                        <a href="/product-detail/${
+                            this.props.productId._id
+                        }?scroll=${
             this.props._id
         }" class="bg-blue-100 text-blue-600 px-2 rounded flex items-center gap-1 text-sm hover:bg-blue-200" 
                         target="_blank" rel="noopener noreferrer"
@@ -53,15 +59,23 @@ class AdminUserCommentItem extends QBComponent<IProductComment, AdminUserComment
                     </div>
                 </div>
                  <div class="text-gray-700 text-sm ">
-                   Rating: ${this.props.rating} <i class="fa-solid fa-star text-yellow-400"></i>
+                   Rating: ${
+                       this.props.rating
+                   } <i class="fa-solid fa-star text-yellow-400"></i>
                 </div>
-                <div class="text-gray-700 text-sm ${!this.state.isShow ? 'text-gray-300' : ''}">
+                <div class="text-gray-700 text-sm ${
+                    !this.state.isShow ? 'text-gray-300' : ''
+                }">
                     ${this.props.comment}
                 </div>
-                <div class="pt-2 grid grid-cols-3 gap-2 w-[250px] ${!this.state.isShow ? 'opacity-50' : ''}">
+                <div class="pt-2 grid grid-cols-3 gap-2 w-[250px] ${
+                    !this.state.isShow ? 'opacity-50' : ''
+                }">
                   ${this.props.images
                       ?.map((image) => {
-                          return /*html*/ ` <img src="${image}" class="w-full h-full object-cover comment-image" alt="">`;
+                          return /*html*/ ` <img src="${toImage(
+                              image
+                          )}" class="w-full h-full object-cover comment-image" alt="">`;
                       })
                       .join('')}
                 </div>
@@ -71,7 +85,10 @@ class AdminUserCommentItem extends QBComponent<IProductComment, AdminUserComment
     protected addEventListener(): void {
         this.signEvent('.btn-active', 'click', async () => {
             const isShow = !this.state.isShow;
-            const res = await commentService.changeStatus(this.props._id, isShow);
+            const res = await commentService.changeStatus(
+                this.props._id,
+                isShow
+            );
             if (res) {
                 this.setState({ isShow: isShow });
                 toast.success('Update success');
@@ -87,7 +104,10 @@ interface AdminUserTabProps {
 interface AdminUserTabState {
     lsComment: IProductComment[];
 }
-class AdminUserComments extends QBComponent<AdminUserTabProps, AdminUserTabState> {
+class AdminUserComments extends QBComponent<
+    AdminUserTabProps,
+    AdminUserTabState
+> {
     constructor(props: AdminUserTabProps) {
         super(props);
 
@@ -112,7 +132,11 @@ class AdminUserComments extends QBComponent<AdminUserTabProps, AdminUserTabState
 
     protected renderUI(): void {
         super.renderUI();
-        this.renderList('#list-items', this.state.lsComment, AdminUserCommentItem);
+        this.renderList(
+            '#list-items',
+            this.state.lsComment,
+            AdminUserCommentItem
+        );
     }
 
     protected async afterRender(): Promise<void> {

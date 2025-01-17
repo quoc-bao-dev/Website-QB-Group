@@ -4,6 +4,7 @@ import QBComponent from '../../lib/QBComponent';
 import QBRouter from '../../lib/QBRouter';
 import chatReduecer from '../../store/chatReducer';
 import userReducer from '../../store/userReducer';
+import { toImage } from '../../util/image';
 import UserFavorite from './partial/Profile.Favorite';
 import UserProfileOrder from './partial/Profile.Order';
 import ProfielWarpper from './partial/Profile.ProfileWrapper';
@@ -64,11 +65,15 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
                         class="flex items-center justify-center gap-3 pr-5 h-[48px] border border-gray-200 bg-white rounded-full ">
                         ${
                             userReducer.getData?.image
-                                ? `<img src="${userReducer.data?.image}" class="h-full rounded-full overflow-hidden p-1 aspect-[1/1] object-cover" alt="">`
+                                ? `<img src="${toImage(
+                                      userReducer.data?.image!
+                                  )}" class="h-full rounded-full overflow-hidden p-1 aspect-[1/1] object-cover" alt="">`
                                 : `<img src="https://ui-avatars.com/api/?name=${userReducer.getData?.username}&size=200" class="h-full rounded-full overflow-hidden p-1 aspect-[1/1] object-cover" alt="">`
                         }
                         <div class="flex flex-col ">
-                            <h2 class="text-gray-900 ftex"> ${userReducer.getData?.fullName}</h2>
+                            <h2 class="text-gray-900 ftex"> ${
+                                userReducer.getData?.fullName
+                            }</h2>
                             <p class="text-xs text-gray-500">
                                 ${userReducer.getData?.email}
                             </p>
@@ -89,7 +94,9 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
                 <div class="flex flex-col gap-3 pt-2">
                     <div
                         class=" px-3 rounded-lg flex gap-5 items-center justify-center md:justify-start w-full py-3 md:py-2  hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'profile' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'profile'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="profile">
                         <i class="fa-solid fa-user"></i>
                         <p class="text-gray-600 hidden md:block">Profile</p>
@@ -97,7 +104,9 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
 
                     <div
                         class=" px-3 rounded-lg flex gap-5 items-center justify-center md:justify-start w-full py-3 md:py-2  hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'address' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'address'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="address">
                         <i class="fa-solid fa-location-dot"></i>
                         <p class="text-gray-600 hidden md:block">Address</p>
@@ -105,7 +114,9 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
 
                     <div
                         class=" px-3 rounded-lg flex gap-5 items-center justify-center md:justify-start w-full py-3 md:py-2  hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'changePassword' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'changePassword'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="changePassword">
                         <i class="fa-solid fa-key"></i>
                         <p class="text-gray-600 hidden md:block">Change Password</p>
@@ -118,7 +129,9 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
                 <div class="flex flex-col gap-3 pt-2">
                     <div
                         class=" px-3 rounded-lg flex gap-5 items-center justify-center md:justify-start w-full py-3 md:py-2  hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'orders' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'orders'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="orders">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <p class="text-gray-600 hidden md:block">Orders</p>
@@ -126,7 +139,9 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
 
                     <div
                         class=" px-3 rounded-lg flex gap-5 items-center justify-center md:justify-start w-full py-3 md:py-2  hover:bg-blue-100 hover:text-blue-900 cursor-pointer side-bar-items ${
-                            this.state.curPage === 'favorite' ? 'bg-blue-200 text-blue-900' : 'text-gray-600'
+                            this.state.curPage === 'favorite'
+                                ? 'bg-blue-200 text-blue-900'
+                                : 'text-gray-600'
                         }" data-page="favorite">
                         <i class="fa-solid fa-heart"></i>
                         <p class="text-gray-600 hidden md:block">Favorite</p>
@@ -183,14 +198,23 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
     }
 
     private renderUserProfileSection() {
-        this.renderComponent('#content-section', new ProfielWarpper({ curPage: 'profile' }));
+        this.renderComponent(
+            '#content-section',
+            new ProfielWarpper({ curPage: 'profile' })
+        );
     }
     private renderChangePassSection() {
-        this.renderComponent('#content-section', new ProfielWarpper({ curPage: 'changePassword' }));
+        this.renderComponent(
+            '#content-section',
+            new ProfielWarpper({ curPage: 'changePassword' })
+        );
     }
 
     private renderAddressSection() {
-        this.renderComponent('#content-section', new ProfielWarpper({ curPage: 'address' }));
+        this.renderComponent(
+            '#content-section',
+            new ProfielWarpper({ curPage: 'address' })
+        );
     }
 
     private renderUserProfileOrder() {
@@ -214,7 +238,8 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
     private eventChangePage() {
         this.signEventAll('.side-bar-items', 'click', (e: Event) => {
             const btnClick = e.target as HTMLElement;
-            const page = (btnClick.closest('.side-bar-items') as HTMLElement).dataset.page;
+            const page = (btnClick.closest('.side-bar-items') as HTMLElement)
+                .dataset.page;
 
             if (page) {
                 this.setState({ curPage: page });
@@ -235,7 +260,16 @@ class UserProfilePage extends QBComponent<{}, UserProfilePageState> {
     // after render
     protected async afterRender(): Promise<void> {
         const page = QBRouter.querries.page;
-        if (page && ['profile', 'changePassword', 'address', 'orders', 'favorite'].includes(page)) {
+        if (
+            page &&
+            [
+                'profile',
+                'changePassword',
+                'address',
+                'orders',
+                'favorite',
+            ].includes(page)
+        ) {
             this.setState({ curPage: page });
             history.replaceState(null, '', `/user-profile?page=${page}`);
         }
