@@ -7,7 +7,7 @@ import QBRouter from '../../../lib/QBRouter';
 import ImageCommentReduce from '../../../store/ImageCommentReduce';
 import userReducer from '../../../store/userReducer';
 import { date } from '../../../util/date';
-import { toImage } from '../../../util/image';
+import { extractFileName, toImage } from '../../../util/image';
 import toast from '../../../util/toast';
 import { IUser } from './../../../interface/user';
 
@@ -157,7 +157,8 @@ class CommentItem extends QBComponent<IProductComment> {
 
             const image = (e.target as HTMLImageElement).src;
 
-            ImageCommentReduce.setCurIamge(image);
+            const fileName = extractFileName(image);
+            if (fileName) ImageCommentReduce.setCurIamge(fileName);
 
             signal.emit('open-image-modal');
         });
@@ -206,7 +207,7 @@ class TabComments extends QBComponent<{}, TabCommentsState> {
                     ${
                         userReducer.getData?.image
                             ? `<img class="size-[48px] object-cover rounded-full border border-gray-200"
-                        src="${userReducer.getData.image}" alt="">`
+                        src="${toImage(userReducer.getData.image)}" alt="">`
                             : `<div class="size-[48px] object-cover rounded-full bg-gray-200 flex items-center justify-center text-xl">${userReducer.getData?.username.charAt(
                                   1
                               )}</div>`

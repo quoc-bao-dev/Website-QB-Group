@@ -31,11 +31,17 @@ class ProductItem extends QBComponent<IOrderItem> {
                             this.props.product.image
                         }" alt="Product 2">
                         <div>
-                            <p class="font-medium text-gray-800">${this.props.product.name}</p>
-                            <p class="text-sm text-gray-500">Quantity: ${this.props.quantity}</p>
+                            <p class="font-medium text-gray-800">${
+                                this.props.product.name
+                            }</p>
+                            <p class="text-sm text-gray-500">Quantity: ${
+                                this.props.quantity
+                            }</p>
                         </div>
                     </div>
-                    <p class="font-medium text-gray-800">${usd(prd.pr(this.props.product as Product))}</p>
+                    <p class="font-medium text-gray-800">${usd(
+                        prd.pr(this.props.product as Product)
+                    )}</p>
                 </div>
         `;
     };
@@ -51,14 +57,20 @@ class OrderItem extends QBComponent<Order> {
             <div class="flex justify-between items-center mb-4">
                 <div>
                     <p class="text-sm text-gray-500">Order ID: <span
-                            class="font-medium text-gray-800">#${this.props._id}</span>
+                            class="font-medium text-gray-800">#${
+                                this.props._id
+                            }</span>
                     </p>
                     <p class="text-sm text-gray-500">Order Date: <span
-                            class="font-medium text-gray-800">${date(this.props.createdAt)}</span></p>
+                            class="font-medium text-gray-800">${date(
+                                this.props.createdAt
+                            )}</span></p>
                 </div>
                 <div class="text-sm text-right">
                     <p class="text-gray-500">Status:</p>
-                    <p class="font-medium text-blue-600">${this.props.status}</p>
+                    <p class="font-medium text-blue-600">${
+                        this.props.status
+                    }</p>
                 </div>
             </div>
             <div class="flex flex-col gap-3">
@@ -68,7 +80,10 @@ class OrderItem extends QBComponent<Order> {
             <div class="mt-4 flex justify-between items-center">
                 <p class="text-base text-gray-500">Total:</p>
                 <p class="font-medium text-gray-800">${usd(
-                    this.props.orderItems.reduce((a, b) => a + prd.pr(b.product as Product) * b.quantity, 0)
+                    this.props.orderItems.reduce(
+                        (a, b) => a + prd.pr(b.product as Product) * b.quantity,
+                        0
+                    )
                 )}</p>
             </div>
             <div class="flex justify-end items-center gap-3">
@@ -105,7 +120,9 @@ class OrderItem extends QBComponent<Order> {
 
     // support
     private removeOrder = async () => {
-        const res = await orderService.updateOrderById(this.props._id, { status: 'cancelled' });
+        const res = await orderService.updateOrderById(this.props._id, {
+            status: 'cancelled',
+        });
         if (res) {
             toast.success('Order cancelled successfully');
             signal.emit('order-updated');
@@ -145,52 +162,74 @@ class OrderDetail extends QBComponent<OrderDetailProps, OrderDetailState> {
         const step = indexStatus(satus);
 
         return /*html*/ `
-        <p class="text-lg font-medium text-gray-800 mb-4"> Order ID: #${this.state.order?._id}</p>
+        <p class="text-lg font-medium text-gray-800 mb-4"> Order ID: #${
+            this.state.order?._id
+        }</p>
         <div class="w-full bg-gray-200  h-3 grid grid-cols-5">
-                <div class="col-span-1 h-3 ${step >= 0 ? 'bg-blue-500' : 'bg-gray-200'} grid place-content-center">
+                <div class="col-span-1 h-3 ${
+                    step >= 0 ? 'bg-blue-500' : 'bg-gray-200'
+                } grid place-content-center">
                     <div class="size-10 rounded-full bg-white grid place-content-center">
                         <div class="size-9 rounded-full ${
-                            step >= 0 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+                            step >= 0
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-200 text-gray-500'
                         } grid place-content-center">
                             <i class="fa-regular fa-clock"></i>
                         </div>
                     </div>
                 </div>   
                 
-                <div class="col-span-1 h-3 ${step >= 1 ? 'bg-blue-500' : 'bg-gray-200'} grid place-content-center">
+                <div class="col-span-1 h-3 ${
+                    step >= 1 ? 'bg-blue-500' : 'bg-gray-200'
+                } grid place-content-center">
                     <div class="size-10 rounded-full bg-white grid place-content-center">
                         <div class="size-9 rounded-full ${
-                            step >= 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+                            step >= 1
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-200 text-gray-500'
                         } grid place-content-center">
                             <i class="fa-regular fa-square-check"></i>
                         </div>
                     </div>
                 </div>   
 
-                <div class="col-span-1 h-3 ${step >= 2 ? 'bg-blue-500' : 'bg-gray-200'} grid place-content-center">
+                <div class="col-span-1 h-3 ${
+                    step >= 2 ? 'bg-blue-500' : 'bg-gray-200'
+                } grid place-content-center">
                     <div class="size-10 rounded-full bg-white grid place-content-center">
                         <div class="size-9 rounded-full ${
-                            step >= 2 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+                            step >= 2
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-200 text-gray-500'
                         } grid place-content-center">
                             <i class="fa-solid fa-truck"></i>
                         </div>
                     </div>
                 </div>   
 
-                <div class="col-span-1 h-3 ${step >= 3 ? 'bg-blue-500' : 'bg-gray-200'} grid place-content-center">
+                <div class="col-span-1 h-3 ${
+                    step >= 3 ? 'bg-blue-500' : 'bg-gray-200'
+                } grid place-content-center">
                     <div class="size-10 rounded-full bg-white grid place-content-center">
                         <div class="size-9 rounded-full ${
-                            step >= 3 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+                            step >= 3
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-200 text-gray-500'
                         } grid place-content-center">
                             <i class="fa-solid fa-truck-ramp-box"></i>
                         </div>
                     </div>
                 </div>   
 
-                <div class="col-span-1 h-3 ${step >= 4 ? 'bg-blue-500' : 'bg-gray-200'} grid place-content-center">
+                <div class="col-span-1 h-3 ${
+                    step >= 4 ? 'bg-blue-500' : 'bg-gray-200'
+                } grid place-content-center">
                     <div class="size-10 rounded-full bg-white grid place-content-center">
                         <div class="size-9 rounded-full ${
-                            step >= 4 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-500'
+                            step >= 4
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-200 text-gray-500'
                         } grid place-content-center">
                            <i class="fa-regular fa-circle-check"></i>
                         </div>
@@ -203,11 +242,15 @@ class OrderDetail extends QBComponent<OrderDetailProps, OrderDetailState> {
             <div class="flex justify-between items-center mb-4">
                 <div>
                     <p class="text-sm text-gray-500">Order Date:</p>
-                    <p class="font-medium text-gray-800">${date(this.state.order?.createdAt as string)}</p>
+                    <p class="font-medium text-gray-800">${date(
+                        this.state.order?.createdAt as string
+                    )}</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Expected Delivery Date:</p>
-                    <p class="font-medium text-gray-800">${date(this.state.order?.deliveryDate)}</p>
+                    <p class="font-medium text-gray-800">${date(
+                        this.state.order?.deliveryDate
+                    )}</p>
                 </div>
             </div>
             <div class="flex flex-col gap-3">
@@ -222,11 +265,16 @@ class OrderDetail extends QBComponent<OrderDetailProps, OrderDetailState> {
                                     item.product?.name
                                 }" class="w-20 h-20 object-cover">
                                     <div class="flex-1">
-                                        <p class="text-base font-medium">${item.product?.name}</p>
+                                        <p class="text-base font-medium">${
+                                            item.product?.name
+                                        }</p>
                                         <p class="text-sm text-gray-500">${usd(
-                                            prd.pr(item.product as Product) * item.quantity
+                                            prd.pr(item.product as Product) *
+                                                item.quantity
                                         )}</p>
-                                        <p class="text-sm text-gray-500">Quantity: ${item.quantity}</p>
+                                        <p class="text-sm text-gray-500">Quantity: ${
+                                            item.quantity
+                                        }</p>
                                     </div>
                                 </div>
                             `;
@@ -236,11 +284,15 @@ class OrderDetail extends QBComponent<OrderDetailProps, OrderDetailState> {
                 </div>
                 <p class="text-base font-medium">Total: ${usd(
                     this.state.order.orderItems.reduce(
-                        (total, item) => total + prd.pr(item.product as Product) * item.quantity,
+                        (total, item) =>
+                            total +
+                            prd.pr(item.product as Product) * item.quantity,
                         0
                     )
                 )}</p>
-                 <p class="text-base font-medium">Payment Method: ${this.state.order?.paymentMethod}</p>
+                 <p class="text-base font-medium">Payment Method: ${
+                     this.state.order?.paymentMethod
+                 }</p>
                  <p class="text-base font-medium">Payment Status:<span class="${
                      this.state.order?.paymentStatus === 'success'
                          ? 'text-green-500'
@@ -251,7 +303,9 @@ class OrderDetail extends QBComponent<OrderDetailProps, OrderDetailState> {
                 <div class="w-full h-[1px] bg-gray-200 my-2"></div>
                 <div class="flex items-center justify-between">
                     <div class="flex flex-col gap-1">
-                         <p class="text-base font-medium my-1">Phone: ${this.state.order?.deliveryAddress.phone}</p>
+                         <p class="text-base font-medium my-1">Phone: ${
+                             this.state.order?.deliveryAddress.phone
+                         }</p>
                     <p class="text-base font-medium my-1">Recipient Name: ${
                         this.state.order?.deliveryAddress.recipientName
                     }</p>
@@ -264,10 +318,18 @@ class OrderDetail extends QBComponent<OrderDetailProps, OrderDetailState> {
                 <div class="flex flex-col gap-3 col-span-1">
                     <p class="text-base font-medium text-gray-800 ">Shipping Address:</p>
                     <div class="flex flex-col gap-2">
-                        <p class="text-sm text-gray-500">Country: ${this.state.order?.deliveryAddress.country}</p>
-                        <p class="text-sm text-gray-500">City: ${this.state.order?.deliveryAddress.city}</p>
-                        <p class="text-sm text-gray-500">District: ${this.state.order?.deliveryAddress.district}</p>
-                        <p class="text-sm text-gray-500">Address: ${this.state.order?.deliveryAddress.address}</p>
+                        <p class="text-sm text-gray-500">Country: ${
+                            this.state.order?.deliveryAddress.country
+                        }</p>
+                        <p class="text-sm text-gray-500">City: ${
+                            this.state.order?.deliveryAddress.city
+                        }</p>
+                        <p class="text-sm text-gray-500">District: ${
+                            this.state.order?.deliveryAddress.district
+                        }</p>
+                        <p class="text-sm text-gray-500">Address: ${
+                            this.state.order?.deliveryAddress.address
+                        }</p>
                         <p class="text-sm text-gray-500">Postal Code: ${
                             this.state.order?.deliveryAddress.postalCode
                         }</p>
@@ -384,43 +446,57 @@ class UserProfileOrder extends QBComponent<{}, UserProfileOrderState> {
                         <div class="flex flex-col gap-3 px-5 pt-5">
                             <div
                                 class="rounded-lg py-3 px-4 hover:bg-blue-50 hover:text-blue-900 sidebar-item ${
-                                    this.state.curPage === 'all' ? 'bg-blue-100 text-blue-600' : 'text-gray-500'
+                                    this.state.curPage === 'all'
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'text-gray-500'
                                 }" data-status="all">
                                 <p class="">All</p>
                             </div>
                             <div
                                 class="rounded-lg py-3 px-4 hover:bg-blue-50 hover:text-blue-900 sidebar-item ${
-                                    this.state.curPage === 'pending' ? 'bg-blue-100 text-blue-600' : 'text-gray-500'
+                                    this.state.curPage === 'pending'
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'text-gray-500'
                                 }" data-status="pending">
                                 <p>Pending</p>
                             </div>
                             <div
                                 class="rounded-lg py-3 px-4 hover:bg-blue-50 hover:text-blue-900 sidebar-item ${
-                                    this.state.curPage === 'confirmed' ? 'bg-blue-100 text-blue-600' : 'text-gray-500'
+                                    this.state.curPage === 'confirmed'
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'text-gray-500'
                                 }" data-status="confirmed">
                                 <p>Confirmed</p>
                             </div>
                             <div
                                 class="rounded-lg py-3 px-4 hover:bg-blue-50 hover:text-blue-900 sidebar-item ${
-                                    this.state.curPage === 'shipped' ? 'bg-blue-100 text-blue-600' : 'text-gray-500'
+                                    this.state.curPage === 'shipped'
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'text-gray-500'
                                 }" data-status="shipped">
                                 <p>Shipped</p>
                             </div>
                             <div
                                 class="rounded-lg py-3 px-4 hover:bg-blue-50 hover:text-blue-900 sidebar-item ${
-                                    this.state.curPage === 'delivered' ? 'bg-blue-100 text-blue-600' : 'text-gray-500'
+                                    this.state.curPage === 'delivered'
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'text-gray-500'
                                 }" data-status="delivered">
                                 <p>Delivered</p>
                             </div>
                             <div
                                 class="rounded-lg py-3 px-4 hover:bg-blue-50 hover:text-blue-900 sidebar-item ${
-                                    this.state.curPage === 'completed' ? 'bg-blue-100 text-blue-600' : 'text-gray-500'
+                                    this.state.curPage === 'completed'
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'text-gray-500'
                                 }" data-status="completed">
                                 <p>Completed</p>
                             </div>
                             <div
                                 class="rounded-lg py-3 px-4 hover:bg-blue-50 hover:text-blue-900 sidebar-item ${
-                                    this.state.curPage === 'cancelled' ? 'bg-blue-100 text-blue-600' : 'text-gray-500'
+                                    this.state.curPage === 'cancelled'
+                                        ? 'bg-blue-100 text-blue-600'
+                                        : 'text-gray-500'
                                 }" data-status="cancelled">
                                 <p>Cancelled</p>
                             </div>
@@ -464,7 +540,10 @@ class UserProfileOrder extends QBComponent<{}, UserProfileOrderState> {
     }
 
     private renderOrderDetail() {
-        this.renderComponent('#order-items', new OrderDetail({ id: this.state.orderDetailId! }));
+        this.renderComponent(
+            '#order-items',
+            new OrderDetail({ id: this.state.orderDetailId! })
+        );
     }
 
     protected addEventListener(): void {
@@ -493,7 +572,9 @@ class UserProfileOrder extends QBComponent<{}, UserProfileOrderState> {
         const userId = userReducer.getData?.userId;
 
         if (userId) {
-            const listOrder = (await orderService.getOrderByUserId(userId)) as Order[];
+            const listOrder = (await orderService.getOrderByUserId(
+                userId
+            )) as Order[];
             this.state.listOrederFull = listOrder;
             this.setPage(this.state.curPage);
         } else {
@@ -509,13 +590,55 @@ class UserProfileOrder extends QBComponent<{}, UserProfileOrderState> {
     private setPage(status: string) {
         this.state.orderDetailId = null;
         const listOrder = this.state.listOrederFull;
-        const lsOrderAll = sortItemsByStatus(listOrder.filter((item) => item.status !== 'cancelled'));
-        const lsOrderPending = listOrder.filter((item) => item.status === 'pending');
-        const lsOrderConfirmed = listOrder.filter((item) => item.status === 'confirmed');
-        const lsOrderShipped = listOrder.filter((item) => item.status === 'shipped');
-        const lsOrderDelivered = listOrder.filter((item) => item.status === 'delivered');
-        const lsOrderCompleted = listOrder.filter((item) => item.status === 'completed');
-        const lsOrderCancelled = listOrder.filter((item) => item.status === 'cancelled');
+        const lsOrderAll = sortItemsByStatus(
+            listOrder.filter((item) => item.status !== 'cancelled')
+        ).sort(
+            (a, b) =>
+                new Date(b.orderDate).getTime() -
+                new Date(a.orderDate).getTime()
+        );
+        const lsOrderPending = listOrder
+            .filter((item) => item.status === 'pending')
+            .sort(
+                (a, b) =>
+                    new Date(b.orderDate).getTime() -
+                    new Date(a.orderDate).getTime()
+            );
+        const lsOrderConfirmed = listOrder
+            .filter((item) => item.status === 'confirmed')
+            .sort(
+                (a, b) =>
+                    new Date(b.orderDate).getTime() -
+                    new Date(a.orderDate).getTime()
+            );
+        const lsOrderShipped = listOrder
+            .filter((item) => item.status === 'shipped')
+            .sort(
+                (a, b) =>
+                    new Date(b.orderDate).getTime() -
+                    new Date(a.orderDate).getTime()
+            );
+        const lsOrderDelivered = listOrder
+            .filter((item) => item.status === 'delivered')
+            .sort(
+                (a, b) =>
+                    new Date(b.orderDate).getTime() -
+                    new Date(a.orderDate).getTime()
+            );
+        const lsOrderCompleted = listOrder
+            .filter((item) => item.status === 'completed')
+            .sort(
+                (a, b) =>
+                    new Date(b.orderDate).getTime() -
+                    new Date(a.orderDate).getTime()
+            );
+        const lsOrderCancelled = listOrder
+            .filter((item) => item.status === 'cancelled')
+            .sort(
+                (a, b) =>
+                    new Date(b.orderDate).getTime() -
+                    new Date(a.orderDate).getTime()
+            );
 
         switch (status) {
             case 'all':

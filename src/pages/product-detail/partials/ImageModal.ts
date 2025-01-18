@@ -1,7 +1,7 @@
 import signal from '../../../lib/listener';
 import QBComponent from '../../../lib/QBComponent';
 import ImageCommentReduce from '../../../store/ImageCommentReduce';
-import { toImage } from '../../../util/image';
+import { extractFileName, toImage } from '../../../util/image';
 
 class ImageModal extends QBComponent {
     constructor() {
@@ -25,9 +25,9 @@ class ImageModal extends QBComponent {
             ImageCommentReduce.getIsShow ? 'show' : ''
         }" id="modal">
         <div class="flex flex-col gap-5">
-            <img class="max-h-[70vh] max-w-[90vw] object-contain" src="${
+            <img class="max-h-[70vh] max-w-[90vw] object-contain" src="${toImage(
                 ImageCommentReduce.getCurImage
-            }" alt="">
+            )}" alt="">
         <div class="flex items-center justify-center">
             ${ImageCommentReduce.getListImage
                 .map((image, index) => {
@@ -64,7 +64,8 @@ class ImageModal extends QBComponent {
 
         this.signEventAll('.image-item', 'click', (e) => {
             const image = (e.target as HTMLImageElement).src;
-            ImageCommentReduce.setCurIamge(image);
+            const fileName = extractFileName(image);
+            if (fileName) ImageCommentReduce.setCurIamge(fileName);
         });
     }
 
